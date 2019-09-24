@@ -388,15 +388,16 @@ void BDSup2Sub::init()
 
 void BDSup2Sub::loadSettings()
 {
-    QString iniPath;
+    QString iniPath, configPath;
 #ifdef Q_OS_WIN
     iniPath = QString(getenv("APPDATA"));
-#endif
-#ifndef Q_OS_WIN
+    configPath = QString("bdsup2sub++");
+#else
     iniPath = QString(getenv("HOME"));
+    configPath = QString(".config/bdsup2sub++");
 #endif
     QSettings::setPath(QSettings::IniFormat, QSettings::UserScope, iniPath);
-    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "bdsup2sub++", "bdsup2sub++");
+    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, configPath, iniName);
 
     if (!fromCLI)
     {
