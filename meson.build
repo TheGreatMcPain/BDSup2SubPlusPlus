@@ -1,5 +1,7 @@
 project('bdsup2sub++', 'cpp', version : '1.0.3', default_options : ['warning_level=3'])
 
+add_global_arguments(['-DBUILD_QXT_CORE', '-DQT_NO_DEBUG', '-DQT_XML_LIB', '-DQT_WIDGETS_LIB', '-DQT_GUI_LIB', '-DQT_CORE_LIB'], language: 'cpp')
+
 incdirs = [
     include_directories('src'),
     include_directories('src/Filters'),
@@ -97,7 +99,7 @@ qtprocessed = qt5_mod.preprocess(moc_headers: moc_header_files,
 
 pkg_mod = import('pkgconfig')
 
-libbdsup2sub = shared_library(
+libbdsup2sub = static_library(
     'bdsup2sub++',
 
     source_files,
@@ -112,24 +114,26 @@ libbdsup2sub = shared_library(
 )
 
 pkg_mod.generate(libraries: libbdsup2sub,
-                 version: meson.version(),
+                 version: meson.project_version(),
                  name: 'libbdsup2sub++',
                  filebase: 'bdsup2sub++',
                  description: 'Pretty much bdsup2sub++ without the main function.')
 
-install_headers('src/bdsup2sub.h')
+install_headers('src/Subtitles/palette.h', subdir: 'bdsup2sub/Subtitles')
+install_headers('src/bdsup2sub.h', subdir: 'bdsup2sub')
 
-# executable(
-#     'bdsup2sub++',
-# 
-#     'src/main.cpp',
-#     source_files,
-# 
-#     qtprocessed,
-# 
-#     include_directories: incdirs,
-# 
-#     dependencies: qt5deps,
-# 
-#     install : true
-# )
+executable(
+    'bdsup2sub++',
+
+    'src/main.cpp',
+
+    qtprocessed,
+
+    link_with: libbdsup2sub,
+
+    include_directories: incdirs,
+
+    dependencies: qt5deps,
+
+    install : true
+)
