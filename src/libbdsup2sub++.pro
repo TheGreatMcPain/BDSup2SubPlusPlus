@@ -17,14 +17,26 @@ greaterThan(QT_VER_MAJ, 4) {
 QT        -= gui
 QT        += widgets
 }
-CONFIG    += qt console sharedlib
+CONFIG    += qt console sharedlib create_pc create_prl no_install_prl
 DEFINES   += BUILD_QXT_CORE
 QMAKE_CXXFLAGS += -std=c++14
 TARGET     = bdsup2sub++
 TEMPLATE   = lib
+header_bdsup2sub.path = /usr/include/bdsup2sub++/
+header_bdsup2sub.files = $$PWD/bdsup2sub.h
+header_pallet.path = /usr/include/bdsup2sub++/Subtitles
+header_pallet.files = $$PWD/Subtitles/palette.h
+target.path = $$[QT_INSTALL_LIBS]
+QMAKE_PKGCONFIG_NAME = bdsup2sub++
+QMAKE_PKGCONFIG_DESCRIPTION = Basically bdsup2sub++ without main.cpp
+QMAKE_PKGCONFIG_PREFIX = $$INSTALLBASE
+QMAKE_PKGCONFIG_LIBDIR = $$target.path
+QMAKE_PKGCONFIG_INCDIR = $$header_bdsup2sub.path
+QMAKE_PKGCONFIG_VERSION = 1.0.3
+QMAKE_PKGCONFIG_DESTDIR = pkgconfig
+INSTALLS += target header_pallet header_bdsup2sub
 
-SOURCES += main.cpp\
-        bdsup2sub.cpp \
+SOURCES += bdsup2sub.cpp \
     zoomableimagearea.cpp \
     editpane.cpp \
     Filters/trianglefilter.cpp \
