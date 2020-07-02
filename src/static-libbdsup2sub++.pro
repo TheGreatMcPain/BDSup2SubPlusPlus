@@ -17,7 +17,7 @@ greaterThan(QT_VER_MAJ, 4) {
 QT        -= gui
 QT        += widgets
 }
-CONFIG    += qt console sharedlib create_pc create_prl no_install_prl
+CONFIG    += qt console staticlib create_pc create_prl no_install_prl
 DEFINES   += BUILD_QXT_CORE
 QMAKE_CXXFLAGS += -std=c++14
 TARGET     = bdsup2sub++
