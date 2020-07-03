@@ -9,7 +9,7 @@ Current maintainer is paradoxic4l.
 
 # libbdsup2sub++
 
-This fork adds a meson.build that will create a shared library. Which basically has all the code except `main.cpp`.
+This fork adds a meson.build that will create a library. Which basically has all the code except `main.cpp`.
 
 The reasoning behind this is because I wanted to write a c++ application that requires bdsup2sub, but I didn't want
 to have to require java to run said application.  I figured out that all the `main.cpp` code does is create a
