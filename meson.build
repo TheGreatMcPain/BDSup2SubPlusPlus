@@ -61,6 +61,28 @@ source_files = [
 qt5_mod = import('qt5')
 qt5deps = dependency('qt5', modules : ['Widgets', 'Core', 'Xml'])
 
+cxx = meson.get_compiler('cpp')
+cpu_family = target_machine.cpu_family()
+host_system = target_machine.system()
+
+win_dep = []
+
+if host_system == 'windows'
+    mxe_qt5 = get_option('prefix') + '/qt5'
+
+    win_dep += cxx.find_library('qwindows', dirs: mxe_qt5 / 'plugins/platforms')
+    deps = [
+        'Qt5ThemeSupport',
+        'Qt5EventDispatcherSupport',
+        'Qt5FontDatabaseSupport',
+        'Qt5WindowsUIAutomationSupport',
+        'wtsapi32'
+    ]
+    foreach d : deps
+        win_dep += cxx.find_library(d, dirs: mxe_qt5 / 'lib')
+    endforeach
+endif
+
 moc_header_files = [
     'src/bdsup2sub.h',
     'src/colordialog.h',
@@ -133,7 +155,7 @@ executable(
 
     include_directories: incdirs,
 
-    dependencies: qt5deps,
+    dependencies: [qt5deps, win_dep],
 
     install : true
 )
