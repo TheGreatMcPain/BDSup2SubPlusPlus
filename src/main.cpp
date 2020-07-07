@@ -46,5 +46,11 @@ int main(int argc, char *argv[])
 #endif
         w.show();
     }
+
+    if (!isGUI)
+    {
+        exit(0);
+    }
+
     return a.exec();
 }
