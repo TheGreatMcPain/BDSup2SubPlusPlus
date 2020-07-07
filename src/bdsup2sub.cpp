@@ -1823,7 +1823,8 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
         }
         outStream << QString("\nConversion of %1 file(s) finished\n").arg(QString::number(srcFileNames.size())) << endl;
     }
-    exit(0);
+    return true;
+    // exit(0);
 }
 
 void BDSup2Sub::Redirect_console()
