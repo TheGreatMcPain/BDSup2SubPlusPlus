@@ -895,7 +895,7 @@ void BDSup2Sub::addCLIOptions()
     options->alias("o", "output");
 }
 
-bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
+bool BDSup2Sub::execCLI(int argc, char** argv)
 {
     Redirect_console();
 
@@ -905,7 +905,12 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
 
     addCLIOptions();
 
-    QStringList args = QApplication::arguments();
+    // QStringList args = QApplication::arguments();
+    QStringList args;
+    for (int x = 0; x < argc; x++)
+    {
+        args << argv[x];
+    }
 
     if (args.contains("-o"))
     {
