@@ -269,6 +269,7 @@ public:
     QTextStream* outStream;
 
     void setOutputStreamToStdError();
+    void setQuiet();
 
     void convertSup(int index, int displayNumber, int displayMax, bool skipScaling = false);
     void setActive(bool value) { isActive = value; }
@@ -528,6 +529,7 @@ private:
 
     QVector<SubPicture*> subPictures;
 
+    bool quiet = false;
     int languageIdxRead = false;
     int maxProgress = 0;
     double lastProgress = 0.0;

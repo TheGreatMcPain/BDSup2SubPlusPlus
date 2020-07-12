@@ -77,10 +77,17 @@ SubtitleProcessor::~SubtitleProcessor()
     }
 }
 
+void SubtitleProcessor::setQuiet()
+{
+    quiet = 1;
+}
+
 void SubtitleProcessor::setOutputStreamToStdError()
 {
     outStream = new QTextStream(stderr);
 }
+
+
 
 void SubtitleProcessor::SetValuesFromSettings()
 {
@@ -1288,7 +1295,10 @@ void SubtitleProcessor::print(const QString &message)
     }
     else
     {
-        *outStream << message;
+        if (!quiet)
+        {
+            *outStream << message;
+        }
     }
 }
 
@@ -1300,8 +1310,11 @@ void SubtitleProcessor::printX(const QString &message)
     }
     else
     {
-        *outStream << message;
-        outStream->flush();
+        if (!quiet)
+        {
+            *outStream << message;
+            outStream->flush();
+        }
     }
 }
 

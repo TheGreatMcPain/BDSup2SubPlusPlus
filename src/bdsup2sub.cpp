@@ -16,7 +16,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 #include "bdsup2sub.h"
 #include "ui_bdsup2sub.h"
 #include "Subtitles/subtitleprocessor.h"
@@ -876,6 +875,7 @@ void BDSup2Sub::addCLIOptions()
     options->add("no-verbose",        "\tSwitch off verbose console output mode.");
     options->add("verbose",           "\tSwitch on verbose console output mode.");
     options->add("log-to-stderr",     "\tSwitch to change progress output to standard error.");
+    options->add("quiet",             "\tSilence all output.");
 
     options->addSection("Options only for SUB/IDX or SUP/IFO as target");
     options->add("alpha-thr",         "\tSet alpha threshold 0..255. Default 80.",
@@ -922,6 +922,12 @@ bool BDSup2Sub::execCLI(int argc, char** argv)
     QMultiHash<QString, QVariant> parameters = options->parameters();
     QStringList positional = options->positional();
 
+    if (options->count("quiet"))
+    {
+        // QString buffer;
+        // outStream.setString(&buffer, QIODevice::WriteOnly);
+        subtitleProcessor->setQuiet();
+    }
     if (options->count("log-to-stderr"))
     {
         streamFile.open(stderr, QIODevice::WriteOnly);
@@ -931,6 +937,7 @@ bool BDSup2Sub::execCLI(int argc, char** argv)
     {
         streamFile.open(stdout, QIODevice::WriteOnly);
     }
+
     outStream.setDevice(&streamFile);
 
     if (positional.size() > 1 || options->count("h") || options->showUnrecognizedWarning(errorStream))
