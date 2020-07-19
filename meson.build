@@ -1,6 +1,10 @@
 project('bdsup2sub++', 'cpp', version : '1.0.3', default_options : ['warning_level=3'])
 
-add_global_arguments(['-DBUILD_QXT_CORE', '-DQT_NO_DEBUG', '-DQT_XML_LIB', '-DQT_WIDGETS_LIB', '-DQT_GUI_LIB', '-DQT_CORE_LIB'], language: 'cpp')
+if meson.is_subproject()
+    add_project_arguments(['-DBUILD_QXT_CORE', '-DQT_NO_DEBUG', '-DQT_XML_LIB', '-DQT_WIDGETS_LIB', '-DQT_GUI_LIB', '-DQT_CORE_LIB'], language: 'cpp')
+else
+    add_global_arguments(['-DBUILD_QXT_CORE', '-DQT_NO_DEBUG', '-DQT_XML_LIB', '-DQT_WIDGETS_LIB', '-DQT_GUI_LIB', '-DQT_CORE_LIB'], language: 'cpp')
+endif
 
 incdirs = [
     include_directories('src'),
@@ -130,32 +134,32 @@ libbdsup2sub = static_library(
 
     include_directories: incdirs,
 
-    dependencies: qt5deps,
+    dependencies: [qt5deps, win_dep],
 
     install : true
 )
 
-pkg_mod.generate(libraries: libbdsup2sub,
-                 version: meson.project_version(),
-                 name: 'libbdsup2sub++',
-                 filebase: 'bdsup2sub++',
-                 description: 'Pretty much bdsup2sub++ without the main function.')
+libbdsup2sub_dep = declare_dependency(
+    include_directories : incdirs,
+    link_with : libbdsup2sub,
+    dependencies: [qt5deps, win_dep],
+)
 
-install_headers('src/Subtitles/palette.h', subdir: 'bdsup2sub/Subtitles')
-install_headers('src/bdsup2sub.h', subdir: 'bdsup2sub')
+# pkg_mod.generate(libraries: libbdsup2sub,
+#                  version: meson.project_version(),
+#                  name: 'libbdsup2sub++',
+#                  filebase: 'bdsup2sub++',
+#                  description: 'Pretty much bdsup2sub++ without the main function.')
 
-executable(
+# install_headers('src/Subtitles/palette.h', subdir: 'bdsup2sub/Subtitles')
+# install_headers('src/bdsup2sub.h', subdir: 'bdsup2sub')
+
+bdsup2sub = executable(
     'bdsup2sub++',
 
     'src/main.cpp',
 
-    qtprocessed,
-
-    link_with: libbdsup2sub,
-
-    include_directories: incdirs,
-
-    dependencies: [qt5deps, win_dep],
+    dependencies: [libbdsup2sub_dep],
 
     install : true
 )
