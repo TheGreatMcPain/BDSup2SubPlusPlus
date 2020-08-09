@@ -152,12 +152,14 @@ libbdsup2sub_dep = declare_dependency(
 # install_headers('src/Subtitles/palette.h', subdir: 'bdsup2sub/Subtitles')
 # install_headers('src/bdsup2sub.h', subdir: 'bdsup2sub')
 
-bdsup2sub = executable(
-    'bdsup2sub++',
-
-    'src/main.cpp',
-
-    dependencies: [libbdsup2sub_dep],
-
-    install : true
-)
+if not meson.is_subproject()
+    bdsup2sub = executable(
+        'bdsup2sub++',
+    
+        'src/main.cpp',
+    
+        dependencies: [libbdsup2sub_dep],
+    
+        install : true
+    )
+endif
