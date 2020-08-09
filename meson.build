@@ -8,9 +8,7 @@ endif
 
 incdirs = [
     include_directories('src'),
-    include_directories('src/Filters'),
-    include_directories('src/Subtitles'),
-    include_directories('src/Tools')
+    include_directories('src/Filters'), include_directories('src/Subtitles'), include_directories('src/Tools')
 ]
 
 source_files = [
@@ -136,7 +134,7 @@ libbdsup2sub = static_library(
 
     dependencies: [qt5deps, win_dep],
 
-    install : true
+    install : false
 )
 
 libbdsup2sub_dep = declare_dependency(
