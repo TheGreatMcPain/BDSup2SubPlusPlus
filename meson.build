@@ -123,6 +123,13 @@ qtprocessed = qt5_mod.preprocess(moc_headers: moc_header_files,
 
 pkg_mod = import('pkgconfig')
 
+# Disable sanitize within subproject.
+if meson.is_subproject()
+  overrides = ['b_sanitize=none']
+else
+  overrides = []
+endif
+
 libbdsup2sub = static_library(
     'bdsup2sub++',
 
@@ -133,6 +140,8 @@ libbdsup2sub = static_library(
     include_directories: incdirs,
 
     dependencies: [qt5deps, win_dep],
+
+    override_options: overrides,
 
     install : false
 )
