@@ -62,7 +62,8 @@ Palette::Palette(int paletteSize, bool use601) :
 Palette::Palette(QVector<uchar> inRed, QVector<uchar> inGreen, QVector<uchar> inBlue, QVector<uchar> inAlpha, bool use601) :
     useBT601(use601)
 {
-    for (int i = 0; i < inRed.size(); ++i)
+    int size = qMin(qMin(qMin(inRed.size(), inGreen.size()), inBlue.size()), inAlpha.size());
+    for (int i = 0; i < size; ++i)
     {
         colors.push_back(qRgba(inRed.at(i), inGreen.at(i), inBlue.at(i), inAlpha.at(i)));
     }
