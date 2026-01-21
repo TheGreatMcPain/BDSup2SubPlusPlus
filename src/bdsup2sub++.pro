@@ -19,7 +19,7 @@ QT        += widgets
 }
 CONFIG    += qt console
 DEFINES   += BUILD_QXT_CORE
-QMAKE_CXXFLAGS += -std=c++14
+QMAKE_CXXFLAGS += -std=c++17
 TARGET     = bdsup2sub++
 TEMPLATE   = app
 
