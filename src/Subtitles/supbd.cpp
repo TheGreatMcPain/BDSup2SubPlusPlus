@@ -114,8 +114,8 @@ void SupBD::readAllSupFrames()
     int bufsize = (int)fileBuffer->getSize();
     SupSegment segment;
     SubPictureBD pic;
-    QMap<int, QVector<PaletteInfo>> palettes;
-    QMap<int, QVector<ODS>> imageObjects;
+    QMap<int, QList<PaletteInfo>> palettes;
+    QMap<int, QList<ODS>> imageObjects;
     int subCount = 0;
     bool forceFirstOds = true;
     ODS ods;
@@ -166,7 +166,7 @@ void SupBD::readAllSupFrames()
                     {
                         if (!palettes.contains(pds.paletteId))
                         {
-                            palettes[palId] = QVector<PaletteInfo>();
+                            palettes[palId] = QList<PaletteInfo>();
                         }
                         else
                         {
@@ -200,7 +200,7 @@ void SupBD::readAllSupFrames()
                     {
                         if (isFirst)
                         {
-                            imageObjects[ods.objectId] = QVector<ODS> { ods };
+                            imageObjects[ods.objectId] = QList<ODS> { ods };
                             subtitleProcessor->print(QString("%1, img size: %2*%3\n")
                                                      .arg(out)
                                                      .arg(QString::number(ods.width))
@@ -424,10 +424,10 @@ bool SupBD::imagesAreMergeable(SubPictureBD &currentSub, SubPictureBD &prevSub)
     {
         if (!currentSub.imageObjectList.empty() && !prevSub.imageObjectList.empty())
         {
-            QVector<uchar> curImageBuf, prevImageBuf;
+            QList<uchar> curImageBuf, prevImageBuf;
             for (auto& imageObject : currentSub.imageObjectList)
             {
-                curImageBuf = QVector<uchar>(imageObject.bufferSize());
+                curImageBuf = QList<uchar>(imageObject.bufferSize());
                 int index = 0;
                 for (auto& fragment : imageObject.fragmentList())
                 {
@@ -437,7 +437,7 @@ bool SupBD::imagesAreMergeable(SubPictureBD &currentSub, SubPictureBD &prevSub)
             }
             for (auto& imageObject : prevSub.imageObjectList)
             {
-                prevImageBuf = QVector<uchar>(imageObject.bufferSize());
+                prevImageBuf = QList<uchar>(imageObject.bufferSize());
                 int index = 0;
                 for (auto& fragment : imageObject.fragmentList())
                 {
@@ -451,7 +451,7 @@ bool SupBD::imagesAreMergeable(SubPictureBD &currentSub, SubPictureBD &prevSub)
     return false;
 }
 
-QVector<uchar> SupBD::encodeImage(Bitmap &bm)
+QList<uchar> SupBD::encodeImage(Bitmap &bm)
 {
     uchar color;
     int ofs;
@@ -464,7 +464,7 @@ QVector<uchar> SupBD::encodeImage(Bitmap &bm)
     const uchar* pixels = bm.image().constScanLine(0);
     int sourcePitch = bm.image().bytesPerLine();
 
-    QVector<uchar> bytes;
+    QList<uchar> bytes;
     bytes.reserve(height * sourcePitch);
 
     for (int y = 0; y < height; ++y)
@@ -552,7 +552,7 @@ int SupBD::getFpsId(double fps)
     return 0x10;
 }
 
-QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette &pal, bool forcedOnly)
+QList<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette &pal, bool forcedOnly)
 {
     // the last palette entry must be transparent
     if (pal.size() > 255 && pal.alpha(255) > 0)
@@ -560,7 +560,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
         // quantize image
         QuantizeFilter qf;
         Bitmap bmQ(bm.width(), bm.height());
-        QVector<QRgb> ct = qf.quantize(bm.toARGB(pal), &bmQ.image(), bm.width(), bm.height(), 255, false, false);
+        QList<QRgb> ct = qf.quantize(bm.toARGB(pal), &bmQ.image(), bm.width(), bm.height(), 255, false, false);
         int size = ct.size();
 
         subtitleProcessor->print(QString("Palette had to be reduced from %1 to %2 entries.\n")
@@ -597,7 +597,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
         }
     }
 
-    QVector<QVector<uchar>> rleBuf;
+    QList<QVector<uchar>> rleBuf;
     int rleBufSize = 0;
 
     QMap<int, QRect> imageSizes;
@@ -623,7 +623,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
         numberOfWindows = subPicture->numberOfWindows();
     }
 
-    QVector<Bitmap> bitmaps;
+    QList<Bitmap> bitmaps;
     int xOffset1 = 0, xOffset2 = 0, yOffset1 = 0, yOffset2 = 0;
 
     if (numberOfImageObjects == 1)
@@ -663,7 +663,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
         bitmaps.push_back(bm.crop(xOffset2, yOffset2, imageSizes[1].width(), imageSizes[1].height()));
     }
 
-    QVector<int> forcedFlags;
+    QList<int> forcedFlags;
 
     if (forcedOnly)
     {
@@ -700,7 +700,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
 
     for (int i = 0; i < bitmaps.size(); ++i)
     {
-        QVector<uchar> buf = encodeImage(bitmaps[i]);
+        QList<uchar> buf = encodeImage(bitmaps[i]);
         rleBufSize += buf.size();
         rleBuf.push_back(buf);
     }
@@ -738,7 +738,7 @@ QVector<uchar> SupBD::createSupFrame(SubPicture *subPicture, Bitmap &bm, Palette
 
     int h = subPicture->screenHeight() - (2 * subtitleProcessor->getCropOfsY());
 
-    QVector<uchar> buf(size);
+    QList<uchar> buf(size);
     int index = 0;
 
     int fpsId = getFpsId(subtitleProcessor->getFPSTrg());
@@ -1190,7 +1190,7 @@ void SupBD::findImageArea(SubPictureBD *subPicture)
 {
     QImage image = _bitmap.image(_palette);
     int top = 0, bottom = 0, left = 0, right = 0;
-    QVector<QRgb> colors = image.colorTable();//.constData();
+    QList<QRgb> colors = image.colorTable();//.constData();
 
     const uchar *pixels = image.constScanLine(0);
     int pitch = image.bytesPerLine();
@@ -1320,7 +1320,7 @@ Palette SupBD::decodePalette(SubPictureBD *subPicture)
     bool fadeOut = false;
     int palIndex = 0;
 
-    QVector<PaletteInfo> pl = subPicture->palettes[subPicture->paletteId()];
+    QList<PaletteInfo> pl = subPicture->palettes[subPicture->paletteId()];
 
     if (pl.isEmpty())
     {
@@ -1386,7 +1386,7 @@ Palette SupBD::decodePalette(SubPictureBD *subPicture)
 Bitmap SupBD::decodeImage(SubPictureBD *subPicture, int transparentIndex)
 {
     int numImgObj = 0;
-    QVector<int> objectIdxes;
+    QList<int> objectIdxes;
 
     for (auto key : subPicture->imageObjectList.keys())
     {
@@ -1427,7 +1427,7 @@ Bitmap SupBD::decodeImage(SubPictureBD *subPicture, int transparentIndex)
         int xpos = 0;
 
         // just for multi-packet support, copy all of the image data in one common buffer
-        QVector<uchar> buf = QVector<uchar>(imageObject.bufferSize());
+        QList<uchar> buf = QVector<uchar>(imageObject.bufferSize());
         index = 0;
         for (int p = 0; p < imageObject.fragmentList().size(); ++p)
         {

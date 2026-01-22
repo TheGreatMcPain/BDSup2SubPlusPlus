@@ -36,7 +36,7 @@ SubPictureBD::SubPictureBD(const SubPictureBD *other) :
     }
     QList<int> keys = other->palettes.keys();
     int i = 0;
-    for (QVector<PaletteInfo> paletteInfos : other->palettes)
+    for (QList<PaletteInfo> paletteInfos : other->palettes)
     {
         for (PaletteInfo paletteInfo : paletteInfos)
         {
@@ -59,7 +59,7 @@ SubPictureBD::SubPictureBD(const SubPictureBD &other) :
     }
     QList<int> keys = other.palettes.keys();
     int i = 0;
-    for (QVector<PaletteInfo> paletteInfos : other.palettes)
+    for (QList<PaletteInfo> paletteInfos : other.palettes)
     {
         for (PaletteInfo paletteInfo : paletteInfos)
         {
@@ -74,7 +74,7 @@ SubPicture* SubPictureBD::copy()
     return new SubPictureBD(this);
 }
 
-void SubPictureBD::setData(const PCS &pcs, QMap<int, QVector<ODS>> ods, QMap<int, QVector<PaletteInfo>> pds, const WDS &wds)
+void SubPictureBD::setData(const PCS &pcs, QMap<int, QList<ODS>> ods, QMap<int, QVector<PaletteInfo>> pds, const WDS &wds)
 {
     start = pcs.pts;
     _screenWidth = pcs.videoWidth;

@@ -24,7 +24,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QString>
-#include <QVector>
+#include <QList>
 
 class FileBuffer
 {

@@ -62,13 +62,13 @@ Palette SubstreamDVD::decodePalette(SubPictureDVD &pic, Palette &palette, int al
     return miniPalette;
 }
 
-QVector<uchar> SubstreamDVD::encodeLines(Bitmap &bitmap, bool even)
+QList<uchar> SubstreamDVD::encodeLines(Bitmap &bitmap, bool even)
 {
     int ofs = 0;
     uchar color;
     int len;
     int y;
-    QVector<uchar> nibbles;
+    QList<uchar> nibbles;
 
     if (even)
     {
@@ -144,8 +144,8 @@ QVector<uchar> SubstreamDVD::encodeLines(Bitmap &bitmap, bool even)
     nibbles.push_back((uchar)(0));
 
     int size =  nibbles.size() / 2; // number of bytes
-    QVector<uchar> retval(size);
-    QVectorIterator<uchar> it(nibbles);
+    QList<uchar> retval(size);
+    QListIterator<uchar> it(nibbles);
     for (int i = 0; i < size; ++i)
     {
         int hi = (it.next() & 0xf);
@@ -174,7 +174,7 @@ Bitmap SubstreamDVD::decodeImage(SubPictureDVD &pic, int transIdx)
 
     Bitmap bm(width, height, transIdx);
 
-    QVector<uchar> buf(pic.rleSize());
+    QList<uchar> buf(pic.rleSize());
     int index = 0;
 
     int sizeEven;
@@ -255,10 +255,10 @@ void SubstreamDVD::decode(SubPictureDVD &pic, SubtitleProcessor* subtitleProcess
     _primaryColorIndex = _bitmap.primaryColorIndex(_palette, subtitleProcessor->getAlphaThreshold());
 }
 
-void SubstreamDVD::decodeLine(QVector<uchar> src, int srcOfs, int srcLen,
+void SubstreamDVD::decodeLine(QList<uchar> src, int srcOfs, int srcLen,
                               QImage &trg, int trgOfs, int width, int maxPixels)
 {
-    QVector<uchar> nibbles(srcLen * 2);
+    QList<uchar> nibbles(srcLen * 2);
     int b;
 
     for (int i = 0; i < srcLen; ++i)

@@ -21,7 +21,7 @@
 #define FILTEROP_H
 
 #include <QColor>
-#include <QVector>
+#include <QList>
 
 class Bitmap;
 class Filter;
@@ -33,21 +33,21 @@ class FilterOp
 public:
     FilterOp(Filter& filter);
 
-    QVector<QRgb> filter(Bitmap &src, Palette &palette, int w, int h);
+    QList<QRgb> filter(Bitmap &src, Palette &palette, int w, int h);
 
     class SubSamplingData {
     public:
         SubSamplingData() { }
-        SubSamplingData(QVector<int>& s, QVector<int>& p, QVector<float>& w, int width) :
+        SubSamplingData(QList<int>& s, QVector<int>& p, QVector<float>& w, int width) :
             matrixWidth(width),
             numberOfSamples(s),
             pixelPositions(p),
             weights(w)
         { }
         int matrixWidth = 0;
-        QVector<int> numberOfSamples;
-        QVector<int> pixelPositions;
-        QVector<float> weights;
+        QList<int> numberOfSamples;
+        QList<int> pixelPositions;
+        QList<float> weights;
     };
 
 private:
@@ -61,7 +61,7 @@ private:
     SubSamplingData horizontalSubsamplingData;
     SubSamplingData verticalSubsamplingData;
 
-    void filterVertically(QVector<QRgb>& src, QVector<QRgb>& trg);
+    void filterVertically(QList<QRgb>& src, QVector<QRgb>& trg);
     void filterHorizontally(QImage &src, QRgb *trg, const QRgb *rgba);
 
     SubSamplingData createSubSampling(int srcSize, int dstSize, float scale);

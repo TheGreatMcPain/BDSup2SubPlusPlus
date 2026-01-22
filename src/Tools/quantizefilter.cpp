@@ -28,12 +28,12 @@ void QuantizeFilter::setNumColors(int numColors)
     this->_numColors = std::min(std::max(numColors, 8), 256);
 }
 
-QVector<QRgb> QuantizeFilter::quantize(QImage inImage, QImage *outImage, int width, int height,
+QList<QRgb> QuantizeFilter::quantize(QImage inImage, QImage *outImage, int width, int height,
                                       int numColors, bool dither, bool serpentine)
 {
     quantizer.setup(numColors);
     quantizer.addPixels(inImage);
-    QVector<QRgb> table = quantizer.buildColorTable();
+    QList<QRgb> table = quantizer.buildColorTable();
 
     QRgb *inPixels = 0;
     int sourcePitch = inImage.bytesPerLine() / 4;
@@ -129,7 +129,7 @@ QVector<QRgb> QuantizeFilter::quantize(QImage inImage, QImage *outImage, int wid
     }
 
     // create palette
-    QVector<QRgb> p;
+    QList<QRgb> p;
 
     inPixels = (QRgb*)inImage.scanLine(0);
     outPixels = outImage->scanLine(0);
@@ -247,14 +247,14 @@ int QuantizeFilter::OctTreeQuantizer::indexForColor(QRgb argb)
     return 0;
 }
 
-QVector<QRgb> QuantizeFilter::OctTreeQuantizer::buildColorTable()
+QList<QRgb> QuantizeFilter::OctTreeQuantizer::buildColorTable()
 {
-    QVector<QRgb> table(colors);
+    QList<QRgb> table(colors);
     buildColorTable(root, table, 0);
     return table;
 }
 
-void QuantizeFilter::OctTreeQuantizer::buildColorTable(QVector<QRgb> inPixels, QVector<QRgb>& table)
+void QuantizeFilter::OctTreeQuantizer::buildColorTable(QList<QRgb> inPixels, QVector<QRgb>& table)
 {
     int count = inPixels.size();
     maximumColors = table.size();
@@ -353,7 +353,7 @@ void QuantizeFilter::OctTreeQuantizer::reduceTree(int numColors)
 {
     for (int level = MAX_LEVEL - 1; level >= 0; --level)
     {
-        QVector<OctTreeNode*> v = colorList[level];
+        QList<OctTreeNode*> v = colorList[level];
         if (!v.isEmpty())
         {
             for (int j = 0; j < v.size(); j++)
@@ -390,7 +390,7 @@ void QuantizeFilter::OctTreeQuantizer::reduceTree(int numColors)
     }
 }
 
-int QuantizeFilter::OctTreeQuantizer::buildColorTable(QuantizeFilter::OctTreeQuantizer::OctTreeNode *node, QVector<QRgb>& table, int index)
+int QuantizeFilter::OctTreeQuantizer::buildColorTable(QuantizeFilter::OctTreeQuantizer::OctTreeNode *node, QList<QRgb>& table, int index)
 {
     if (colors > maximumColors)
     {

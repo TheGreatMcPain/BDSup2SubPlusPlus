@@ -49,7 +49,7 @@ Palette::Palette(int paletteSize, bool use601) :
     useBT601(use601),
     colors(paletteSize, 0)
 {
-    QVector<int> yCbCr;
+    QList<int> yCbCr;
     for (int i = 0; i < paletteSize; ++i)
     {
         yCbCr = Palette::RGB2YCbCr(qRgb(0, 0, 0), useBT601);
@@ -59,7 +59,7 @@ Palette::Palette(int paletteSize, bool use601) :
     }
 }
 
-Palette::Palette(QVector<uchar> inRed, QVector<uchar> inGreen, QVector<uchar> inBlue, QVector<uchar> inAlpha, bool use601) :
+Palette::Palette(QList<uchar> inRed, QVector<uchar> inGreen, QVector<uchar> inBlue, QVector<uchar> inAlpha, bool use601) :
     useBT601(use601)
 {
     int size = qMin(qMin(qMin(inRed.size(), inGreen.size()), inBlue.size()), inAlpha.size());
@@ -68,7 +68,7 @@ Palette::Palette(QVector<uchar> inRed, QVector<uchar> inGreen, QVector<uchar> in
         colors.push_back(qRgba(inRed.at(i), inGreen.at(i), inBlue.at(i), inAlpha.at(i)));
     }
 
-    QVector<int> yCbCr;
+    QList<int> yCbCr;
     for (int i = 0; i < colors.size(); ++i)
     {
         yCbCr = RGB2YCbCr(colors.at(i), useBT601);
@@ -95,15 +95,15 @@ void Palette::setAlpha(int index, int alpha)
 void Palette::setRGB(int index, QRgb rgb)
 {
     colors.replace(index, qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), qAlpha(colors.at(index))));
-    QVector<int> yCbCr = RGB2YCbCr(rgb, useBT601);
+    QList<int> yCbCr = RGB2YCbCr(rgb, useBT601);
     y.replace(index, yCbCr[0]);
     cb.replace(index, yCbCr[1]);
     cr.replace(index, yCbCr[2]);
 }
 
-QVector<int> Palette::RGB2YCbCr(QRgb rgb, bool use601)
+QList<int> Palette::RGB2YCbCr(QRgb rgb, bool use601)
 {
-    QVector<int> yCbCr;
+    QList<int> yCbCr;
     double y, cb, cr;
     int r = qRed(rgb);
     int g = qGreen(rgb);
@@ -230,9 +230,9 @@ void Palette::setYCbCr(int index, int yn, int cbn, int crn)
     colors.replace(index, qRgba(qRed(rgb), qGreen(rgb), qBlue(rgb), qAlpha(colors.at(index))));
 }
 
-QVector<int> Palette::YCbCr(int index)
+QList<int> Palette::YCbCr(int index)
 {
-    QVector<int> yCbCr;
+    QList<int> yCbCr;
     yCbCr.push_back(y[index] & 0xff);
     yCbCr.push_back(cb[index] & 0xff);
     yCbCr.push_back(cr[index] & 0xff);

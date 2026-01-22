@@ -23,7 +23,7 @@
 #include "subpicture.h"
 #include "imageobjectfragment.h"
 
-#include <QVector>
+#include <QList>
 
 class SubPictureDVD : public SubPicture
 {
@@ -33,12 +33,12 @@ public:
     SubPictureDVD(const SubPictureDVD *other);
     ~SubPictureDVD() { }
 
-    QVector<int> originalAlpha = QVector<int>(4);
-    QVector<int> originalPal = QVector<int>(4);
-    QVector<int> alpha = QVector<int>(4);
-    QVector<int> pal = QVector<int>(4);
+    QList<int> originalAlpha = QVector<int>(4);
+    QList<int> originalPal = QVector<int>(4);
+    QList<int> alpha = QVector<int>(4);
+    QList<int> pal = QVector<int>(4);
 
-    QVector<ImageObjectFragment> rleFragments;
+    QList<ImageObjectFragment> rleFragments;
 
     void setOriginal();
     void copyInfo(SubPicture &subPicture);

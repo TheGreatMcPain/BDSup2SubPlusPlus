@@ -63,11 +63,11 @@ public:
     QImage image();
     QImage image(Bitmap &bitmap);
 
-    QVector<uchar> createSupFrame(SubPictureDVD &subPicture, Bitmap &bitmap);
-    QVector<int> &getFrameAlpha(int index);
-    QVector<int> &getFramePal(int index);
-    QVector<int> getOriginalFrameAlpha(int index);
-    QVector<int> getOriginalFramePal(int index);
+    QList<uchar> createSupFrame(SubPictureDVD &subPicture, Bitmap &bitmap);
+    QList<int> &getFrameAlpha(int index);
+    QList<int> &getFramePal(int index);
+    QList<int> getOriginalFrameAlpha(int index);
+    QList<int> getOriginalFramePal(int index);
 
     SubPicture *subPicture(int index);
 
@@ -79,11 +79,11 @@ private:
     QString supFileName;
     QString ifoFileName;
 
-    QVector<SubPictureDVD> subPictures;
+    QList<SubPictureDVD> subPictures;
 
-    const QVector<uchar> IFOheader = { 0x44, 0x56, 0x44, 0x56, 0x49, 0x44, 0x45, 0x4F, 0x2D, 0x56, 0x54, 0x53 };
+    const QList<uchar> IFOheader = { 0x44, 0x56, 0x44, 0x56, 0x49, 0x44, 0x45, 0x4F, 0x2D, 0x56, 0x54, 0x53 };
 
-    QVector<uchar> controlHeader = {
+    QList<uchar> controlHeader = {
             0x00,													//  dummy byte (for shifting when forced)
             0x00, 0x00,												//  0: offset to end sequence
             0x01,													//  2: CMD 1: start displaying

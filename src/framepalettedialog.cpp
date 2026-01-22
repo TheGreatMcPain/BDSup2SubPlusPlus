@@ -73,8 +73,8 @@ void FramePaletteDialog::setIndex(int idx)
 {
     index = idx;
 
-    QVector<int> a = subtitleProcessor->getFrameAlpha(index);
-    QVector<int> p = subtitleProcessor->getFramePal(index);
+    QList<int> a = subtitleProcessor->getFrameAlpha(index);
+    QList<int> p = subtitleProcessor->getFramePal(index);
 
     if (!a.isEmpty())
     {
@@ -140,10 +140,10 @@ void FramePaletteDialog::on_resetAllButton_clicked()
 {
     for (int j = 0; j < subtitleProcessor->getNumberOfFrames(); ++j)
     {
-        QVector<int> originalAlpha = subtitleProcessor->getOriginalFrameAlpha(j);
-        QVector<int> originalPalette = subtitleProcessor->getOriginalFramePal(j);
-        QVector<int> a = subtitleProcessor->getFrameAlpha(j);
-        QVector<int> p = subtitleProcessor->getFramePal(j);
+        QList<int> originalAlpha = subtitleProcessor->getOriginalFrameAlpha(j);
+        QList<int> originalPalette = subtitleProcessor->getOriginalFramePal(j);
+        QList<int> a = subtitleProcessor->getFrameAlpha(j);
+        QList<int> p = subtitleProcessor->getFramePal(j);
 
         if (!a.isEmpty() && !originalAlpha.isEmpty())
         {
@@ -166,8 +166,8 @@ void FramePaletteDialog::on_setAllButton_clicked()
 {
     for (int j = 0; j < subtitleProcessor->getNumberOfFrames(); ++j)
     {
-        QVector<int> &a = subtitleProcessor->getFrameAlpha(j);
-        QVector<int> &p = subtitleProcessor->getFramePal(j);
+        QList<int> &a = subtitleProcessor->getFrameAlpha(j);
+        QList<int> &p = subtitleProcessor->getFramePal(j);
         if (!a.isEmpty())
         {
             for (int i = 0; i < a.size(); ++i)
@@ -192,10 +192,10 @@ void FramePaletteDialog::on_cancelButton_clicked()
 
 void FramePaletteDialog::on_resetButton_clicked()
 {
-    QVector<int> originalAlpha = subtitleProcessor->getOriginalFrameAlpha(index);
-    QVector<int> originalPalette = subtitleProcessor->getOriginalFramePal(index);
-    QVector<int> &a = subtitleProcessor->getFrameAlpha(index);
-    QVector<int> &p = subtitleProcessor->getFramePal(index);
+    QList<int> originalAlpha = subtitleProcessor->getOriginalFrameAlpha(index);
+    QList<int> originalPalette = subtitleProcessor->getOriginalFramePal(index);
+    QList<int> &a = subtitleProcessor->getFrameAlpha(index);
+    QList<int> &p = subtitleProcessor->getFramePal(index);
 
     if (!a.isEmpty() && !originalAlpha.isEmpty())
     {
@@ -216,8 +216,8 @@ void FramePaletteDialog::on_resetButton_clicked()
 
 void FramePaletteDialog::on_okButton_clicked()
 {
-    QVector<int> &a = subtitleProcessor->getFrameAlpha(index);
-    QVector<int> &p = subtitleProcessor->getFramePal(index);
+    QList<int> &a = subtitleProcessor->getFrameAlpha(index);
+    QList<int> &p = subtitleProcessor->getFramePal(index);
     if (!a.isEmpty())
     {
         for (int i = 0; i < a.size(); ++i)

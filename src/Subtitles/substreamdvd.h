@@ -21,7 +21,7 @@
 #define SUBSTREAMDVD_H
 
 #include <QtCore/QScopedPointer>
-#include <QVector>
+#include <QList>
 #include <QImage>
 
 #include <Subtitles/bitmap.h>
@@ -46,11 +46,11 @@ public:
     virtual Palette &getSrcPalette() = 0;
     static Palette decodePalette(SubPictureDVD &pic, Palette &palette, int alphaCrop);
 
-    QVector<uchar> encodeLines(Bitmap &bitmap, bool even);
-    virtual QVector<int> &getFrameAlpha(int index) = 0;
-    virtual QVector<int> &getFramePal(int index) = 0;
-    virtual QVector<int> getOriginalFrameAlpha(int index) = 0;
-    virtual QVector<int> getOriginalFramePal(int index) = 0;
+    QList<uchar> encodeLines(Bitmap &bitmap, bool even);
+    virtual QList<int> &getFrameAlpha(int index) = 0;
+    virtual QList<int> &getFramePal(int index) = 0;
+    virtual QList<int> getOriginalFrameAlpha(int index) = 0;
+    virtual QList<int> getOriginalFramePal(int index) = 0;
 
 protected:
     Bitmap _bitmap;
@@ -62,8 +62,8 @@ protected:
 
     QScopedPointer<FileBuffer> fileBuffer;
 
-    QVector<int> lastAlpha = { 0, 0xf, 0xf, 0xf };
-    QVector<SubPictureDVD> subPictures;
+    QList<int> lastAlpha = { 0, 0xf, 0xf, 0xf };
+    QList<SubPictureDVD> subPictures;
 
     int screenWidth = 720;
     int screenHeight = 576;
@@ -74,7 +74,7 @@ protected:
     int _primaryColorIndex = 0;
 
 private:
-    void decodeLine(QVector<uchar> src, int srcOfs, int srcLen, QImage &trg, int trgOfs, int width, int maxPixels);
+    void decodeLine(QList<uchar> src, int srcOfs, int srcLen, QImage &trg, int trgOfs, int width, int maxPixels);
 
     Bitmap decodeImage(SubPictureDVD &pic, int transIdx);
 };

@@ -29,7 +29,7 @@
 #include <QObject>
 #include <QString>
 #include <QScopedPointer>
-#include <QVector>
+#include <QList>
 
 class SubtitleProcessor;
 class SubPictureBD;
@@ -72,7 +72,7 @@ public:
 
     SubPicture *subPicture(int index);
 
-    QVector<uchar> createSupFrame(SubPicture* subPicture, Bitmap &bm, Palette &pal, bool forcedOnly);
+    QList<uchar> createSupFrame(SubPicture* subPicture, Bitmap &bm, Palette &pal, bool forcedOnly);
 
 signals:
     void maxProgressChanged(qint64 maxProgress);
@@ -97,7 +97,7 @@ private:
 
     QString supFileName;
 
-    QVector<SubPictureBD> subPictures;
+    QList<SubPictureBD> subPictures;
 
     SubtitleProcessor* subtitleProcessor = 0;
 
@@ -118,7 +118,7 @@ private:
 
     Palette decodePalette(SubPictureBD *subPicture);
 
-    QVector<uchar> encodeImage(Bitmap &bm);
+    QList<uchar> encodeImage(Bitmap &bm);
 
     SupSegment readSegment(int offset);
 
@@ -126,7 +126,7 @@ private:
 
     bool imagesAreMergeable(SubPictureBD &currentSub, SubPictureBD &prevSub);
 
-    QVector<uchar> packetHeader =
+    QList<uchar> packetHeader =
     {
         0x50, 0x47,                         // 0:  "PG"
         0x00, 0x00, 0x00, 0x00,             // 2:  PTS - presentation time stamp
@@ -135,7 +135,7 @@ private:
         0x00, 0x00,                         // 11: segment_length (bytes following till next PG)
     };
 
-    QVector<uchar> headerPCSStart =
+    QList<uchar> headerPCSStart =
     {
         0x00, 0x00, 0x00, 0x00,             // 0: video_width, video_height
         0x10,                               // 4: hi nibble: frame_rate (0x10=24p), lo nibble: reserved
@@ -150,7 +150,7 @@ private:
         0x00, 0x00, 0x00, 0x00              // 15: composition_object_horizontal_position, composition_object_vertical_position
     };
 
-    QVector<uchar> headerPCSNext =
+    QList<uchar> headerPCSNext =
     {
         0x00, 0x01,                         // 11: 16bit object_id_ref
         0x01,                               // 13: window_id_ref (0..1)
@@ -158,7 +158,7 @@ private:
         0x00, 0x00, 0x00, 0x00              // 15: composition_object_horizontal_position, composition_object_vertical_position
     };
 
-    QVector<uchar> headerPCSEnd =
+    QList<uchar> headerPCSEnd =
     {
         0x00, 0x00, 0x00, 0x00,             // 0: video_width, video_height
         0x10,                               // 4: hi nibble: frame_rate (0x10=24p), lo nibble: reserved
@@ -170,7 +170,7 @@ private:
     };
 
 
-    QVector<uchar> headerODSFirst =
+    QList<uchar> headerODSFirst =
     {
         0x00, 0x00,                         // 0: object_id
         0x00,                               // 2: object_version_number
@@ -179,14 +179,14 @@ private:
         0x00, 0x00, 0x00, 0x00,             // 7: object_width, object_height
     };
 
-    QVector<uchar> headerODSNext =
+    QList<uchar> headerODSNext =
     {
         0x00, 0x00,                         // 0: object_id
         0x00,                               // 2: object_version_number
         0x40,                               // 3: first_in_sequence (0x80), last_in_sequence (0x40), 6bits reserved
     };
 
-    QVector<uchar> headerWDS =
+    QList<uchar> headerWDS =
     {
         0x00,                               // 0 : number of windows (0..2)
         0x00,                               // 1 : window id (0..1)
@@ -194,7 +194,7 @@ private:
         0x00, 0x00, 0x00, 0x00              // 6 : width, height
     };
 
-    QVector<uchar> headerWDSNext =
+    QList<uchar> headerWDSNext =
     {
         0x01,                               // 1 : window id (0..1)
         0x00, 0x00, 0x00, 0x00,             // 2 : x-ofs, y-ofs

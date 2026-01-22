@@ -19,7 +19,7 @@
 
 #include "bitstream.h"
 
-BitStream::BitStream(QVector<uchar> &buffer) :
+BitStream::BitStream(QList<uchar> &buffer) :
     byteOfs(0),
     b(buffer[0] & 0xff),
     bits(8),

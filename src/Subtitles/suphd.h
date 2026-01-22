@@ -26,7 +26,7 @@
 
 #include <QObject>
 #include <QString>
-#include <QVector>
+#include <QList>
 #include <QScopedPointer>
 
 class SubtitleProcessor;
@@ -78,7 +78,7 @@ private:
 
     QString supFileName;
 
-    QVector<SubPictureHD> subPictures;
+    QList<SubPictureHD> subPictures;
 
     SubtitleProcessor* subtitleProcessor = 0;
 

@@ -101,22 +101,22 @@ SubPicture *SubDVD::subPicture(int index)
     return &subPictures[index];
 }
 
-QVector<int> &SubDVD::getFrameAlpha(int index)
+QList<int> &SubDVD::getFrameAlpha(int index)
 {
     return subPictures[index].alpha;
 }
 
-QVector<int> &SubDVD::getFramePal(int index)
+QList<int> &SubDVD::getFramePal(int index)
 {
     return subPictures[index].pal;
 }
 
-QVector<int> SubDVD::getOriginalFrameAlpha(int index)
+QList<int> SubDVD::getOriginalFrameAlpha(int index)
 {
     return subPictures[index].originalAlpha;
 }
 
-QVector<int> SubDVD::getOriginalFramePal(int index)
+QList<int> SubDVD::getOriginalFramePal(int index)
 {
     return subPictures[index].originalPal;
 }
@@ -131,7 +131,7 @@ void SubDVD::readSubFrame(SubPictureDVD &pic, qint64 endOfs)
     int rleBufferFound = 0;
     int ctrlSize = -1;
     int ctrlHeaderCopied = 0;
-    QVector<uchar> ctrlHeader;
+    QList<uchar> ctrlHeader;
     ImageObjectFragment rleFrag;
     int length;
     int packHeaderSize;
@@ -197,7 +197,7 @@ void SubDVD::readSubFrame(SubPictureDVD &pic, qint64 endOfs)
             {
                 throw QString("Invalid control buffer size");
             }
-            ctrlHeader = QVector<uchar>(ctrlSize);
+            ctrlHeader = QList<uchar>(ctrlSize);
             ctrlOfs = ctrlOfsRel + ofs; // might have to be corrected for multiple packets
             ofs += 2;
             headerSize = (int)(ofs - startOfs);
@@ -267,7 +267,7 @@ void SubDVD::readSubFrame(SubPictureDVD &pic, qint64 endOfs)
 
     pic.setRleSize(rleBufferFound);
     int alphaSum = 0;
-    QVector<int> alphaUpdate(4);
+    QList<int> alphaUpdate(4);
     int alphaUpdateSum;
     int delay = -1;
     bool ColAlphaUpdate = false;
@@ -493,10 +493,10 @@ void SubDVD::readAllSubFrames()
     subtitleProcessor->printX(QString("\nDetected %1 forced captions.\n").arg(QString::number(_numForcedFrames)));
 }
 
-QVector<uchar> SubDVD::createSubFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
+QList<uchar> SubDVD::createSubFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
 {
-    QVector<uchar> even = encodeLines(bitmap, true);
-    QVector<uchar> odd = encodeLines(bitmap, false);
+    QList<uchar> even = encodeLines(bitmap, true);
+    QList<uchar> odd = encodeLines(bitmap, false);
     int tmp;
 
     int forcedOfs;
@@ -620,7 +620,7 @@ QVector<uchar> SubDVD::createSubFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
     }
 
     // allocate and fill buffer
-    QVector<uchar> buf((1 + numAdditionalPackets) * 0x800);
+    QList<uchar> buf((1 + numAdditionalPackets) * 0x800);
 
     int stuffingBytes;
     int diff = buf.size() - bufSize;
@@ -817,7 +817,7 @@ void SubDVD::readIdx(int idxToRead)
         // size (e.g. "size: 720x576")
         if (key == "size")
         {
-            keyValue = value.split("x", QString::SkipEmptyParts);
+            keyValue = value.split("x", Qt::SkipEmptyParts);
             if (keyValue.isEmpty() || keyValue.size() <= 1)
             {
                 throw QString("Illegal size: %1").arg(value);
@@ -842,7 +842,7 @@ void SubDVD::readIdx(int idxToRead)
         // origin (e.g. "org: 0, 0")
         if (key == "org")
         {
-            keyValue = value.split(",", QString::SkipEmptyParts);
+            keyValue = value.split(",", Qt::SkipEmptyParts);
             if (keyValue.isEmpty() || keyValue.size() <= 1)
             {
                 throw QString("Illegal origin: %1").arg(value);
@@ -968,7 +968,7 @@ void SubDVD::readIdx(int idxToRead)
         if (key == "id")
         {
             QString id;
-            QStringList vals = value.split(',', QString::SkipEmptyParts);
+            QStringList vals = value.split(',', Qt::SkipEmptyParts);
             id = vals[0];
             if (id.size() != 2)
             {
@@ -1004,7 +1004,7 @@ void SubDVD::readIdx(int idxToRead)
             {
                 subtitleProcessor->printWarning(QString("Illegal language id: %1\n").arg(id));
             }
-            vals = value.split(':', QString::SkipEmptyParts);
+            vals = value.split(':', Qt::SkipEmptyParts);
             if (vals.size() == 1)
             {
                 subtitleProcessor->printError(QString("Missing index key: %1\n").arg(value));
@@ -1052,7 +1052,7 @@ void SubDVD::readIdx(int idxToRead)
             if (key == "timestamp")
             {
                 QString vs;
-                QStringList vals = value.split(',', QString::SkipEmptyParts);
+                QStringList vals = value.split(',', Qt::SkipEmptyParts);
                 if (vals.isEmpty() || vals.size() <= 1)
                 {
                     throw QString("Illegal timestamp entry: %1").arg(value);
@@ -1065,7 +1065,7 @@ void SubDVD::readIdx(int idxToRead)
                     throw QString("Illegal timestamp: %1").arg(vals[0]);
                 }
                 vs = vals[1].trimmed().toLower();
-                vals = vs.split(':', QString::SkipEmptyParts);
+                vals = vs.split(':', Qt::SkipEmptyParts);
                 if (vals.isEmpty() || vals.size() <= 1)
                 {
                     throw QString("Missing filepos: %1").arg(value);
@@ -1100,8 +1100,8 @@ void SubDVD::readIdx(int idxToRead)
     emit maxProgressChanged(subPictures.size());
 }
 
-void SubDVD::writeIdx(QString filename, SubPicture &subPicture, QVector<int> offsets,
-                      QVector<int> timestamps, Palette &palette)
+void SubDVD::writeIdx(QString filename, SubPicture &subPicture, QList<int> offsets,
+                      QList<int> timestamps, Palette &palette)
 {
     QScopedPointer<QFile> out(new QFile(filename));
     if (!out->open(QIODevice::WriteOnly | QIODevice::Text))

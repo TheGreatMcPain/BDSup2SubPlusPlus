@@ -29,7 +29,7 @@
 #include <QKeyEvent>
 #include <QDoubleValidator>
 #include <QIntValidator>
-#include <QRegExpValidator>
+#include <QRegularExpressionValidator>
 
 EditDialog::EditDialog(QWidget *parent, SubtitleProcessor* subtitleProcessor) :
     QDialog(parent),
@@ -67,9 +67,9 @@ EditDialog::EditDialog(QWidget *parent, SubtitleProcessor* subtitleProcessor) :
     ui->xOffsetLineEdit->setValidator(xOffsetValidator);
     yOffsetValidator = new QIntValidator;
     ui->yOffsetLineEdit->setValidator(yOffsetValidator);
-    startTimeValidator = new QRegExpValidator(TimeUtil::getTimePattern());
+    startTimeValidator = new QRegularExpressionValidator(TimeUtil::getTimePattern(), this);
     ui->startTimeLineEdit->setValidator(startTimeValidator);
-    endTimeValidator = new QRegExpValidator(TimeUtil::getTimePattern());
+    endTimeValidator = new QRegularExpressionValidator(TimeUtil::getTimePattern(), this);
     ui->endTimeLineEdit->setValidator(endTimeValidator);
 
     this->resize(minimumWidth + 36, minimumHeight + 280);
@@ -389,7 +389,7 @@ void EditDialog::on_okButton_clicked()
 
 void EditDialog::on_addErasePatchButton_clicked()
 {
-    QVector<int> selectionCoordinates = ui->subtitleImage->getSelection();
+    QList<int> selectionCoordinates = ui->subtitleImage->getSelection();
     if (!selectionCoordinates.isEmpty())
     {
         ErasePatch* ep = new ErasePatch(selectionCoordinates[0], selectionCoordinates[1],

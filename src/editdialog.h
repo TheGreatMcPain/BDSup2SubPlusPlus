@@ -32,7 +32,7 @@ class SubPicture;
 class QImage;
 class QDoubleValidator;
 class QIntValidator;
-class QRegExpValidator;
+class QRegularExpressionValidator;
 class QPalette;
 
 namespace Ui {
@@ -101,8 +101,8 @@ private:
     QDoubleValidator* durationValidator;
     QIntValidator* xOffsetValidator;
     QIntValidator* yOffsetValidator;
-    QRegExpValidator* startTimeValidator;
-    QRegExpValidator* endTimeValidator;
+    QRegularExpressionValidator* startTimeValidator;
+    QRegularExpressionValidator* endTimeValidator;
     QPalette* errorBackground;
     QPalette* warnBackground;
     QPalette* okBackground;

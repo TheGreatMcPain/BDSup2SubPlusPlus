@@ -40,7 +40,7 @@ public:
     void setExcluded(bool excluded) { this->excluded = excluded; }
     void setAllowSelection(bool value) { allowSelection = value; }
     void setIsLabel(bool value) { isLabel = value; }
-    QVector<int> getSelection();
+    QList<int> getSelection();
     void removeSelection() { if (allowSelection && validSelection) { validSelection = false; } }
     void setScreenRatio(double ratio) { screenRatioIn = ratio; cineBarFactor = (1.0 - (screenRatio / screenRatioIn)) / 2.0; }
 

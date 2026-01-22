@@ -27,8 +27,8 @@
 #include "types.h"
 #include <QImage>
 #include <QFileInfo>
-#include <QtXml/QXmlSimpleReader>
-#include <QtXml/QXmlInputSource>
+#include <QXmlSimpleReader>
+#include <QXmlInputSource>
 #include <QRect>
 #include <QDir>
 #include <QPainter>
@@ -65,8 +65,8 @@ QImage SupXML::image(Bitmap &bitmap)
 
 void SupXML::decode(int index)
 {
-    QVector<Bitmap> bitmaps;
-    QVector<Palette> palettes;
+    QList<Bitmap> bitmaps;
+    QList<Palette> palettes;
     SubPictureXML &subPic = subPictures[index];
     for (int i = 0; i < subPic.fileNames().size(); ++i)
     {
@@ -84,7 +84,7 @@ void SupXML::decode(int index)
         // first try to read image and palette directly from imported image
         if (image.format() == QImage::Format_Indexed8)
         {
-            QVector<QRgb> colorTable = image.colorTable();
+            QList<QRgb> colorTable = image.colorTable();
             if (colorTable.size() <= 255 || (image.hasAlphaChannel() && qAlpha(colorTable[255]) == 0))
             {
                 // create palette
@@ -111,7 +111,7 @@ void SupXML::decode(int index)
             // quantize image
             QuantizeFilter qf;
             bitmap = Bitmap(image.width(), image.height());
-            QVector<QRgb> ct = qf.quantize(image, &bitmap.image(), width, height, 255, false, false);
+            QList<QRgb> ct = qf.quantize(image, &bitmap.image(), width, height, 255, false, false);
             int size = ct.size();
             if (size > 255)
             {
@@ -273,7 +273,7 @@ QString SupXML::getPNGname(QString filename, int idx)
     return QString("%1/%2_%3.png").arg(info.absolutePath()).arg(info.completeBaseName()).arg(QString::number(idx), 4, QChar('0'));
 }
 
-void SupXML::writeXml(QString filename, QVector<SubPicture*> pics)
+void SupXML::writeXml(QString filename, QList<SubPicture*> pics)
 {
     double fps = subtitleProcessor->getFPSTrg();
     double fpsXml = XmlFps(fps);
@@ -528,7 +528,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
         {
             parent->_numForcedFrames++;
         }
-        QVector<int> dim = parent->subtitleProcessor->getResolutions(parent->resolution);
+        QList<int> dim = parent->subtitleProcessor->getResolutions(parent->resolution);
         subPicture->setScreenWidth(dim.at(0));
         subPicture->setScreenHeight(dim.at(1));
     } break;

@@ -27,7 +27,7 @@
 #include <QString>
 #include <QStringList>
 #include <QSharedPointer>
-#include <QVector>
+#include <QList>
 #include <QSettings>
 
 class QTextStream;
@@ -54,7 +54,7 @@ enum class RunType : int;
 
 static QStringList resolutionNamesXml = { "480i", "576i", "720p", "1440x1080", "1080p" };
 
-static QVector<QVector<int>> resolutions = {
+static QList<QVector<int>> resolutions = {
     {720, 480},
     {720, 576},
     {1280, 720},
@@ -70,7 +70,7 @@ static QStringList resolutionNames = {
     "1080p (1920x1080)"
 };
 
-static QVector<QVector<QString>> languages = {{
+static QList<QVector<QString>> languages = {{
     {"German",       "de", "deu"},
     {"English",      "en", "eng"},
     {"French",       "fr", "fra"},
@@ -272,7 +272,7 @@ public:
 
     void convertSup(int index, int displayNumber, int displayMax, bool skipScaling = false);
     void setActive(bool value) { isActive = value; }
-    QVector<QVector<QString>>& getLanguages() { return languages; }
+    QList<QVector<QString>>& getLanguages() { return languages; }
     Palette &getDefaultDVDPalette() { return defaultDVDPalette; }
     Palette &getCurrentDVDPalette() { return currentDVDPalette; }
     Palette &getCurrentSrcDVDPalette() { return currentSourceDVDPalette; }
@@ -328,8 +328,8 @@ public:
     void setCliMode(bool value) { cliMode = value; }
     bool getExportForced() { return exportForced; }
     void setExportForced(bool value) { exportForced = value; }
-    QVector<int> getLuminanceThreshold() { return luminanceThreshold; }
-    void setLuminanceThreshold(QVector<int> value) { luminanceThreshold = value; }
+    QList<int> getLuminanceThreshold() { return luminanceThreshold; }
+    void setLuminanceThreshold(QList<int> value) { luminanceThreshold = value; }
     void setLoadPath(QString value) { fileName = value; }
     void setIFOFileName(QString value) { ifoFile = value; }
     int getCropOfsY() { return cropOfsY; }
@@ -468,13 +468,13 @@ public:
     Resolution getResolution(int width, int height);
     SubPicture *getSubPictureSrc(int index);
     Resolution getResolution(QString string);
-    QVector<int> getResolutions(Resolution resolution);
+    QList<int> getResolutions(Resolution resolution);
     QImage getTrgImagePatched(SubPicture* subPicture);
     SubPicture *getSubPictureTrg(int index);
-    QVector<int> &getFrameAlpha(int index);
-    QVector<int> getOriginalFrameAlpha(int index);
-    QVector<int> &getFramePal(int index);
-    QVector<int> getOriginalFramePal(int index);
+    QList<int> &getFrameAlpha(int index);
+    QList<int> getOriginalFrameAlpha(int index);
+    QList<int> &getFramePal(int index);
+    QList<int> getOriginalFramePal(int index);
     Filter *scaleFilter;
 
     void storeFreeScale(double xScale, double yScale);
@@ -526,7 +526,7 @@ private:
 
     SubPictureDVD* subVobTrg = 0;
 
-    QVector<SubPicture*> subPictures;
+    QList<SubPicture*> subPictures;
 
     int languageIdxRead = false;
     int maxProgress = 0;
@@ -592,16 +592,16 @@ private:
 
     QString fileName = "";
     QString ifoFile = "";
-    QVector<int> luminanceThreshold = { 210, 160 };
+    QList<int> luminanceThreshold = { 210, 160 };
 
-    QVector<int> alphaDefault = { 0, 0xf, 0xf, 0xf};
+    QList<int> alphaDefault = { 0, 0xf, 0xf, 0xf};
     void SetValuesFromSettings();
     int countForcedIncluded();
     int countIncluded();
     void writePGCEditPalette(QString filename, Palette &palette);
     void validateTimes(int index, SubPicture* subPicture, SubPicture* subPictureNext,
                        SubPicture* subPicturePrevious);
-    QVector<int> getResolution(Resolution resolution);
+    QList<int> getResolution(Resolution resolution);
     void determineFramePalette(int index);
     bool updateTrgPic(int index);
     QImage getSrcImage(int index);

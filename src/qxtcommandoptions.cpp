@@ -753,10 +753,10 @@ bool QxtCommandOptions::showUnrecognizedWarning(QTextStream& stream) const
         name = "QxtCommandOptions";
 
     if (qxt_d().unrecognized.count())
-        stream << name << ": " << tr("unrecognized parameters: ") << qxt_d().unrecognized.join(" ") << endl;
+        stream << name << ": " << tr("unrecognized parameters: ") << qxt_d().unrecognized.join(" ") << Qt::endl;
 
     foreach(const QString& param, qxt_d().missingParams)
-        stream << name << ": " << tr("%1 requires a parameter").arg(param) << endl;
+        stream << name << ": " << tr("%1 requires a parameter").arg(param) << Qt::endl;
 
     return true;
 }
@@ -900,19 +900,19 @@ void QxtCommandOptions::showUsage(bool showQtOptions, QTextStream& stream) const
         if (names[i].isEmpty())
         {
             // Section headers have no name entry
-            stream << endl << descs[i] << ":" << endl;
+            stream << Qt::endl << descs[i] << ":" << Qt::endl;
             continue;
         }
         line = ' ' + names[i] + QString(maxNameLength - names[i].length() + 2, ' ');
-        foreach(const QString& word, descs[i].split(' ', QString::SkipEmptyParts))
+        foreach(const QString& word, descs[i].split(' ', Qt::SkipEmptyParts))
         {
             if (qxt_d().screenWidth > 0 && line.length() + word.length() >= qxt_d().screenWidth)
             {
-                stream << line << endl;
+                stream << line << Qt::endl;
                 line = wrap;
             }
             line += word + ' ';
         }
-        stream << line << endl;
+        stream << line << Qt::endl;
     }
 }

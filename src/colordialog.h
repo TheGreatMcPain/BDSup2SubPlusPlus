@@ -42,10 +42,10 @@ public:
     explicit ColorDialog(QWidget *parent = 0, SubtitleProcessor* subtitleProcessor = 0);
     ~ColorDialog();
 
-    void setParameters(QStringList names, QVector<QColor> currentColor, QVector<QColor> defaultColor);
+    void setParameters(QStringList names, QList<QColor> currentColor, QVector<QColor> defaultColor);
     void setPath(QString value) { colorPath = value; }
     QString getPath() { return colorPath; }
-    QVector<QColor> getColors() { return selectedColors; }
+    QList<QColor> getColors() { return selectedColors; }
     
 private slots:
     void on_colorList_doubleClicked(const QModelIndex &index);
@@ -59,9 +59,9 @@ private slots:
 private:
     Ui::ColorDialog *ui;
     SubtitleProcessor* subtitleProcessor = 0;
-    QVector<QIcon> colorIcons;
-    QVector<QColor> selectedColors;
-    QVector<QColor> defaultColors;
+    QList<QIcon> colorIcons;
+    QList<QColor> selectedColors;
+    QList<QColor> defaultColors;
     QStringList colorNames;
     QString colorPath;
 

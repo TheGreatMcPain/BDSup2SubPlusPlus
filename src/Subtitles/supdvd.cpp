@@ -89,22 +89,22 @@ SubPicture *SupDVD::subPicture(int index)
     return &subPictures[index];
 }
 
-QVector<int> &SupDVD::getFrameAlpha(int index)
+QList<int> &SupDVD::getFrameAlpha(int index)
 {
     return subPictures[index].alpha;
 }
 
-QVector<int> &SupDVD::getFramePal(int index)
+QList<int> &SupDVD::getFramePal(int index)
 {
     return subPictures[index].pal;
 }
 
-QVector<int> SupDVD::getOriginalFrameAlpha(int index)
+QList<int> SupDVD::getOriginalFrameAlpha(int index)
 {
     return subPictures[index].originalAlpha;
 }
 
-QVector<int> SupDVD::getOriginalFramePal(int index)
+QList<int> SupDVD::getOriginalFramePal(int index)
 {
     return subPictures[index].originalPal;
 }
@@ -113,7 +113,7 @@ void SupDVD::readIfo()
 {
     fileBuffer.reset(new FileBuffer(ifoFileName));
 
-    QVector<uchar> header(IFOheader.size());
+    QList<uchar> header(IFOheader.size());
 
     fileBuffer->getBytes(0, header.data(), IFOheader.size());
 
@@ -237,7 +237,7 @@ void SupDVD::readIfo()
 
 void SupDVD::writeIfo(QString filename, SubPicture &subPicture, Palette &palette)
 {
-    QVector<uchar> buf(0x1800);
+    QList<uchar> buf(0x1800);
     int index = 0;
 
     // video attributes
@@ -290,7 +290,7 @@ void SupDVD::writeIfo(QString filename, SubPicture &subPicture, Palette &palette
     NumberUtil::setByte(buf, index + 0x03, 0x01);                   // Number of Cells
     for (int i = 0; i < 16; ++i)
     {
-        QVector<int> ycbcr = palette.YCbCr(i);
+        QList<int> ycbcr = palette.YCbCr(i);
         NumberUtil::setByte(buf, index + 0xA4 + (4 * i) + 1, ycbcr[0]);
         NumberUtil::setByte(buf, index + 0xA4 + (4 * i) + 2, ycbcr[1]);
         NumberUtil::setByte(buf, index + 0xA4 + (4 * i) + 3, ycbcr[2]);
@@ -338,11 +338,11 @@ void SupDVD::setSrcPalette(Palette &palette)
     srcPalette = palette;
 }
 
-QVector<uchar> SupDVD::createSupFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
+QList<uchar> SupDVD::createSupFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
 {
     /* create RLE buffers */
-    QVector<uchar> even = encodeLines(bitmap, true);
-    QVector<uchar> odd  = encodeLines(bitmap, false);
+    QList<uchar> even = encodeLines(bitmap, true);
+    QList<uchar> odd  = encodeLines(bitmap, false);
     int tmp;
 
     int forcedOfs;
@@ -366,7 +366,7 @@ QVector<uchar> SupDVD::createSupFrame(SubPictureDVD &subPicture, Bitmap &bitmap)
     // fill out all info but the offets (determined later)
     int sizeRLE = even.size() + odd.size();
     int bufSize = 10 + 4 + controlHeaderLen + sizeRLE;
-    QVector<uchar> buf(bufSize);
+    QList<uchar> buf(bufSize);
 
     // write header
     buf.replace(0, 0x53);
@@ -497,17 +497,17 @@ qint64 SupDVD::readSupFrame(qint64 ofs)
     }
     ctrlOfs = ctrlOfsRel + ofs;			// absolute offset of control header
     ofs += 2;
-    pic.rleFragments = QVector<ImageObjectFragment>();
+    pic.rleFragments = QList<ImageObjectFragment>();
     rleFrag = ImageObjectFragment();
     rleFrag.setImageBufferOffset(ofs);
     rleFrag.setImagePacketSize(rleSize);
     pic.rleFragments.push_back(rleFrag);
     pic.setRleSize(rleSize);
 
-    pic.pal = QVector<int>(4);
-    pic.alpha = QVector<int>(4);
+    pic.pal = QList<int>(4);
+    pic.alpha = QList<int>(4);
     int alphaSum = 0;
-    QVector<int> alphaUpdate(4);
+    QList<int> alphaUpdate(4);
     int alphaUpdateSum;
     int delay = -1;
     bool ColAlphaUpdate = false;
@@ -515,7 +515,7 @@ qint64 SupDVD::readSupFrame(qint64 ofs)
     subtitleProcessor->print(QString("SP_DCSQT at ofs: %1\n").arg(QString::number(ctrlOfs, 16), 8, QChar('0')));
 
     // copy control header in buffer (to be more compatible with VobSub)
-    QVector<uchar> ctrlHeader(ctrlSize);
+    QList<uchar> ctrlHeader(ctrlSize);
     for (int i = 0; i < ctrlSize; ++i)
     {
         ctrlHeader.replace(i, (uchar)fileBuffer->getByte(ctrlOfs + i));

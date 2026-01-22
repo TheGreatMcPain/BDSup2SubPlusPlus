@@ -31,7 +31,7 @@ FilterOp::FilterOp(Filter& filter) :
 {
 }
 
-QVector<QRgb> FilterOp::filter(Bitmap &src, Palette &palette, int w, int h)
+QList<QRgb> FilterOp::filter(Bitmap &src, Palette &palette, int w, int h)
 {
     dstWidth = w;
     dstHeight = h;
@@ -45,11 +45,11 @@ QVector<QRgb> FilterOp::filter(Bitmap &src, Palette &palette, int w, int h)
     horizontalSubsamplingData = createSubSampling(srcWidth, dstWidth, xscale);
     verticalSubsamplingData = createSubSampling(srcHeight, dstHeight, yscale);
 
-    QVector<QRgb> workPixels(srcHeight * dstWidth);
+    QList<QRgb> workPixels(srcHeight * dstWidth);
     QImage inImage = src.image(palette);
     filterHorizontally(inImage, workPixels.data(), palette.colorTable().constData());
 
-    QVector<QRgb> outPixels(dstHeight * dstWidth);
+    QList<QRgb> outPixels(dstHeight * dstWidth);
     filterVertically(workPixels, outPixels);
 
     return outPixels;
@@ -57,10 +57,10 @@ QVector<QRgb> FilterOp::filter(Bitmap &src, Palette &palette, int w, int h)
 
 FilterOp::SubSamplingData FilterOp::createSubSampling(int srcSize, int dstSize, float scale)
 {
-    QVector<int> arrN(dstSize);
+    QList<int> arrN(dstSize);
     int numContributors;
-    QVector<float> arrWeight;
-    QVector<int> arrPixel;
+    QList<float> arrWeight;
+    QList<int> arrPixel;
 
     float fwidth = internalFilter.radius();
 
@@ -69,8 +69,8 @@ FilterOp::SubSamplingData FilterOp::createSubSampling(int srcSize, int dstSize, 
         // scale down -> subsampling
         float width = fwidth / scale;
         numContributors = (int)((width * 2.0f) + 2); // Heinz: added 1 to be safe with the ceiling
-        arrWeight = QVector<float>(dstSize * numContributors);
-        arrPixel = QVector<int>(dstSize * numContributors);
+        arrWeight = QList<float>(dstSize * numContributors);
+        arrPixel = QList<int>(dstSize * numContributors);
 
         float fNormFac = (float)(1.0f / (ceil(width) / fwidth));
         //
@@ -135,8 +135,8 @@ FilterOp::SubSamplingData FilterOp::createSubSampling(int srcSize, int dstSize, 
     {
         // scale up -> super-sampling
         numContributors = (int)((fwidth * 2.0f) + 1);
-        arrWeight = QVector<float>(dstSize * numContributors);
-        arrPixel = QVector<int>(dstSize * numContributors);
+        arrWeight = QList<float>(dstSize * numContributors);
+        arrPixel = QList<int>(dstSize * numContributors);
         //
         for (int i = 0; i < dstSize; ++i)
         {
@@ -195,7 +195,7 @@ FilterOp::SubSamplingData FilterOp::createSubSampling(int srcSize, int dstSize, 
     return SubSamplingData(arrN, arrPixel, arrWeight, numContributors);
 }
 
-void FilterOp::filterVertically(QVector<QRgb>& src, QVector<QRgb>& trg)
+void FilterOp::filterVertically(QList<QRgb>& src, QVector<QRgb>& trg)
 {
     const QRgb *inPixels = src.constData();
 

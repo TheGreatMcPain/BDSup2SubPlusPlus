@@ -44,14 +44,14 @@ public:
     void setOriginalX(int originalX) { origX = originalX; }
     int originalY() { return origY; }
     void setOriginalY(int originalY) { origY = originalY; }
-    QVector<QString> fileNames() { return filenames; }
+    QList<QString> fileNames() { return filenames; }
     void setFileName(QString fileName) { filenames.push_back(fileName); }
 
 private:
     int origX = 0;
     int origY = 0;
 
-    QVector<QString> filenames;
+    QList<QString> filenames;
 
     friend class SupXML;
 };

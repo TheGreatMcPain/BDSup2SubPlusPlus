@@ -222,9 +222,9 @@ void EditPane::setImage(const QImage &image, int width, int height)
     update();
 }
 
-QVector<int> EditPane::getSelection()
+QList<int> EditPane::getSelection()
 {
-    QVector<int> selectionCoordinates;
+    QList<int> selectionCoordinates;
     if (!allowSelection || !validSelection)
     {
         return selectionCoordinates;

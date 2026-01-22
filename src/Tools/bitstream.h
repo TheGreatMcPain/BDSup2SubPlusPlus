@@ -20,12 +20,12 @@
 #ifndef BITSTREAM_H
 #define BITSTREAM_H
 
-#include <QVector>
+#include <QList>
 
 class BitStream
 {
 public:
-    BitStream(QVector<uchar> &buffer);
+    BitStream(QList<uchar> &buffer);
 
     void syncToByte();
 
@@ -37,7 +37,7 @@ private:
     int b;
     int bits;
 
-    QVector<uchar> buf;
+    QList<uchar> buf;
 };
 
 #endif // BITSTREAM_H

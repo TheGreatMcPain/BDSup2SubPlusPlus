@@ -30,7 +30,7 @@
 class QPalette;
 class SubtitleProcessor;
 class QDoubleValidator;
-class QRegExpValidator;
+class QRegularExpressionValidator;
 class QSettings;
 
 enum class Resolution : int;
@@ -87,8 +87,8 @@ private:
     Ui::ConversionDialog *ui;
     SubtitleProcessor *subtitleProcessor;
 
-    QRegExpValidator* fpsSrcValidator;
-    QRegExpValidator* fpsTrgValidator;
+    QRegularExpressionValidator* fpsSrcValidator;
+    QRegularExpressionValidator* fpsTrgValidator;
     QDoubleValidator* scaleXValidator;
     QDoubleValidator* scaleYValidator;
     QDoubleValidator* delayPTSValidator;

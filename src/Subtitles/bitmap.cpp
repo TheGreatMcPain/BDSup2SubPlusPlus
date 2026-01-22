@@ -27,7 +27,7 @@
 #include <QHash>
 #include <QFile>
 #include <QRect>
-#include <QVector>
+#include <QList>
 
 #include <cassert>
 
@@ -63,7 +63,7 @@ Bitmap::Bitmap(QImage image) :
 
 QRect Bitmap::bounds(Palette &palette, int alphaThreshold)
 {
-    QVector<QRgb> a = palette.colorTable();
+    QList<QRgb> a = palette.colorTable();
     int xMin, xMax, yMin, yMax;
 
     yMax = subtitleImage.height() - 1;
@@ -193,10 +193,10 @@ int Bitmap::primaryColorIndex(Palette &palette, int alphaThreshold)
     return color;
 }
 
-Bitmap Bitmap::convertLm(Palette &palette, int alphaThreshold, QVector<int>& lumaThreshold)
+Bitmap Bitmap::convertLm(Palette &palette, int alphaThreshold, QList<int>& lumaThreshold)
 {
-    QVector<uchar> cy = palette.Y();
-    QVector<QRgb> a = palette.colorTable();
+    QList<uchar> cy = palette.Y();
+    QList<QRgb> a = palette.colorTable();
 
     int height = subtitleImage.height();
     int width = subtitleImage.width();
@@ -262,10 +262,10 @@ Bitmap Bitmap::convertLm(Palette &palette, int alphaThreshold, QVector<int>& lum
 
 Bitmap Bitmap::scaleFilter(int sizeX, int sizeY, Palette &palette, Filter &filter)
 {
-    QVector<QRgb> rgb = palette.colorTable();
+    QList<QRgb> rgb = palette.colorTable();
 
     FilterOp filterOp(filter);
-    QVector<QRgb> trg = filterOp.filter(*this, palette, sizeX, sizeY);
+    QList<QRgb> trg = filterOp.filter(*this, palette, sizeX, sizeY);
 
     Bitmap bm(sizeX, sizeY);
 
@@ -334,7 +334,7 @@ Bitmap Bitmap::scaleFilter(int sizeX, int sizeY, Palette &palette, Filter &filte
 PaletteBitmap Bitmap::scaleFilter(int sizeX, int sizeY, Palette &palette, Filter &filter, bool dither)
 {
     FilterOp fOp(filter);
-    QVector<QRgb> trgPixels = fOp.filter(*this, palette, sizeX, sizeY);
+    QList<QRgb> trgPixels = fOp.filter(*this, palette, sizeX, sizeY);
 
     QImage trg(sizeX, sizeY, QImage::Format_ARGB32);
     int offset = 0;
@@ -355,7 +355,7 @@ PaletteBitmap Bitmap::scaleFilter(int sizeX, int sizeY, Palette &palette, Filter
     // quantize image
     QuantizeFilter qf;
     Bitmap bm(sizeX, sizeY);
-    QVector<QRgb> ct = qf.quantize(trg, &bm.image(), sizeX, sizeY, 255, dither, dither);
+    QList<QRgb> ct = qf.quantize(trg, &bm.image(), sizeX, sizeY, 255, dither, dither);
     int size = ct.size();
     size = std::min(size, 255);
 
@@ -370,10 +370,10 @@ PaletteBitmap Bitmap::scaleFilter(int sizeX, int sizeY, Palette &palette, Filter
     return bitmap;
 }
 
-Bitmap Bitmap::scaleFilterLm(int sizeX, int sizeY, Palette &palette, int alphaThreshold, QVector<int> &lumaThreshold, Filter &filter)
+Bitmap Bitmap::scaleFilterLm(int sizeX, int sizeY, Palette &palette, int alphaThreshold, QList<int> &lumaThreshold, Filter &filter)
 {
     FilterOp filterOp(filter);
-    QVector<QRgb> trg = filterOp.filter(*this, palette, sizeX, sizeY);
+    QList<QRgb> trg = filterOp.filter(*this, palette, sizeX, sizeY);
 
     Bitmap bm(sizeX, sizeY);
 
@@ -660,7 +660,7 @@ PaletteBitmap Bitmap::scaleBilinear(int sizeX, int sizeY, Palette &palette, bool
     // quantize image
     QuantizeFilter qf;
     Bitmap bm(sizeX, sizeY, QImage::Format_Indexed8);
-    QVector<QRgb> ct = qf.quantize(trg, &bm.image(), sizeX, sizeY, 255, dither, dither);
+    QList<QRgb> ct = qf.quantize(trg, &bm.image(), sizeX, sizeY, 255, dither, dither);
     int size = ct.size();
     size = std::min(size, 255);
 
@@ -683,7 +683,7 @@ QImage Bitmap::image(Palette &palette)
     return newImage;
 }
 
-Bitmap Bitmap::scaleBilinearLm(int sizeX, int sizeY, Palette &palette, int alphaThreshold, QVector<int> &lumaThreshold)
+Bitmap Bitmap::scaleBilinearLm(int sizeX, int sizeY, Palette &palette, int alphaThreshold, QList<int> &lumaThreshold)
 {
     const uchar *cy = palette.Y().constData();
     const QRgb *a = palette.colorTable().constData();

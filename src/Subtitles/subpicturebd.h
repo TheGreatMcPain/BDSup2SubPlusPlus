@@ -25,7 +25,7 @@
 #include "paletteinfo.h"
 #include "../types.h"
 
-#include <QVector>
+#include <QList>
 #include <QMap>
 
 class ImageObject;
@@ -42,7 +42,7 @@ struct PCS
     bool paletteUpdate = false;
     int paletteId;
     int numberOfCompositionObjects;
-    QVector<int> objectIds;
+    QList<int> objectIds;
     QMap<int, int> windowIds;       // map of object id to window id
     QMap<int, int> forcedFlags;     // map of object id to forced flag
     QMap<int, int> xPositions;      // map of object id to x position
@@ -52,7 +52,7 @@ struct PCS
 struct WDS
 {
     int numberOfWindows;
-    QVector<int> windowIds;
+    QList<int> windowIds;
     QMap<int, QRect> windows;
 };
 
@@ -181,11 +181,11 @@ public:
         }
     }
 
-    void setData(const PCS &pcs, QMap<int, QVector<ODS>> ods, QMap<int, QVector<PaletteInfo>> pds, const WDS &wds);
+    void setData(const PCS &pcs, QMap<int, QList<ODS>> ods, QMap<int, QVector<PaletteInfo>> pds, const WDS &wds);
 
     QMap<int, ImageObject> imageObjectList;
 
-    QMap<int, QVector<PaletteInfo>> palettes;
+    QMap<int, QList<PaletteInfo>> palettes;
 
 private:
     int type = 0;

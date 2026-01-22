@@ -26,10 +26,10 @@
 
 #include <QObject>
 #include <QFile>
-#include <QtXml/QXmlDefaultHandler>
+#include <QXmlDefaultHandler>
 #include <QStringList>
 #include <QString>
-#include <QVector>
+#include <QList>
 #include <QScopedPointer>
 
 class SubtitleProcessor;
@@ -61,7 +61,7 @@ class SupXML : public QObject, public Substream
 
         QString txt;
 
-        QVector<int> getResolutions(Resolution resolution);
+        QList<int> getResolutions(Resolution resolution);
 
         Resolution getResolution (QString string);
 
@@ -81,7 +81,7 @@ public:
 
     void decode(int index);
     void readAllImages();
-    void writeXml(QString filename, QVector<SubPicture*> pics);
+    void writeXml(QString filename, QList<SubPicture*> pics);
 
     int primaryColorIndex() { return _primaryColorIndex; }
     int numFrames();
@@ -128,7 +128,7 @@ private:
     QString language = "deu";
     QString xmlFileName;
 
-    QVector<SubPictureXML> subPictures;
+    QList<SubPictureXML> subPictures;
 
     Resolution resolution;
 

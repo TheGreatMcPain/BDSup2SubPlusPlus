@@ -19,7 +19,7 @@
 
 #include "numberutil.h"
 
-void NumberUtil::setString(QVector<uchar> &buf, int index, QString string)
+void NumberUtil::setString(QList<uchar> &buf, int index, QString string)
 {
     for (int i = 0; i < string.size(); ++i)
     {

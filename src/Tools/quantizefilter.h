@@ -22,12 +22,12 @@
 
 #include <QColor>
 #include <QImage>
-#include <QVector>
+#include <QList>
 
 /**
  * Floyd-Steinberg dithering matrix.
  */
-static QVector<int> matrix = {
+static QList<int> matrix = {
     0, 0, 0,
     0, 0, 7,
     3, 5, 1,
@@ -42,7 +42,7 @@ class QuantizeFilter
             int children = 0;
             int level = 0;
             OctTreeNode* parent = 0;
-            QVector<OctTreeNode*> leaf = QVector<OctTreeNode*>(16);
+            QList<OctTreeNode*> leaf = QVector<OctTreeNode*>(16);
             bool isLeaf = false;
             int count = 0;
             int totalAlpha = 0;
@@ -65,12 +65,12 @@ class QuantizeFilter
             }
         }
         void addPixels(QImage &image);
-        void buildColorTable(QVector<QRgb> inPixels, QVector<QRgb> &table);
+        void buildColorTable(QList<QRgb> inPixels, QVector<QRgb> &table);
         void setup(int numColors);
 
         int indexForColor(QRgb argb);
 
-        QVector<QRgb> buildColorTable();
+        QList<QRgb> buildColorTable();
 
     private:
         static constexpr int MAX_LEVEL = 5;
@@ -82,11 +82,11 @@ class QuantizeFilter
 
         OctTreeNode* root = new OctTreeNode;
 
-        QVector<QVector<OctTreeNode*>> colorList = QVector<QVector<OctTreeNode*>>(MAX_LEVEL + 1);
+        QList<QVector<OctTreeNode*>> colorList = QVector<QVector<OctTreeNode*>>(MAX_LEVEL + 1);
 
         void insertColor(QRgb rgb);
         void reduceTree(int numColors);
-        int buildColorTable(OctTreeNode* node, QVector<QRgb>& table, int index);
+        int buildColorTable(OctTreeNode* node, QList<QRgb>& table, int index);
     }quantizer;
 
 public:
@@ -112,7 +112,7 @@ public:
      bool getDither() { return dither; }
      bool getSerpentine() { return serpentine; }
 
-     QVector<QRgb> quantize(QImage inImage, QImage *outImage, int width, int height,
+     QList<QRgb> quantize(QImage inImage, QImage *outImage, int width, int height,
                            int numColors, bool dither, bool serpentine);
 
 private:
