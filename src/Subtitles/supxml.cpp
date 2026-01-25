@@ -27,8 +27,7 @@
 #include "types.h"
 #include <QImage>
 #include <QFileInfo>
-#include <QXmlSimpleReader>
-#include <QXmlInputSource>
+#include <QXmlStreamReader>
 #include <QRect>
 #include <QDir>
 #include <QPainter>
@@ -252,16 +251,24 @@ SubPicture *SupXML::subPicture(int index)
 
 void SupXML::readAllImages()
 {
-    QXmlSimpleReader xmlReader;
-    QXmlInputSource *source = new QXmlInputSource(xmlFile.data());
+    XmlReader *reader = new XmlReader(this);
+    if (xmlFile.data()->open(QFile::ReadOnly | QFile::Text)) {
+        reader->setDevice(xmlFile.data());
+        while (!reader->atEnd()) {
+            reader->readNext();
+            if (reader->isStartElement())
+                reader->startElement();
+            if (reader->isCharacters())
+                reader->characters();
+            if (reader->isEndElement())
+                reader->endElement();
+        }
 
-    XmlHandler *handler = new XmlHandler(this);
-    xmlReader.setContentHandler(handler);
-    xmlReader.setErrorHandler(handler);
-
-    if (!xmlReader.parse(source))
-    {
-        throw QString("Failed to parse file: '%1'").arg(xmlFileName);
+        if (reader->hasError()) {
+            throw QString("Failed to parse file: '%1'").arg(xmlFileName);
+            reader->clear();
+            xmlFile.data()->close();
+        }
     }
 
     subtitleProcessor->print(QString("\nDetected %1 forced captions.\n").arg(QString::number(_numForcedFrames)));
@@ -375,16 +382,16 @@ double SupXML::XmlFps(double fps)
 }
 
 
-bool SupXML::XmlHandler::characters(const QString &ch)
+bool SupXML::XmlReader::characters()
 {
-    txt += ch;
+    txt += text().toString();
     return true;
 }
 
 
-bool SupXML::XmlHandler::endElement(const QString &/*namespaceURI*/, const QString &/*localName*/, const QString &qName)
+bool SupXML::XmlReader::endElement()
 {
-    XmlState endState = findState(qName.toLower());
+    XmlState endState = findState(qualifiedName().toString().toLower());
     if (state == XmlState::GRAPHIC && endState == XmlState::GRAPHIC)
     {
         subPicture->setFileName(parent->pathName + txt.trimmed());
@@ -392,13 +399,13 @@ bool SupXML::XmlHandler::endElement(const QString &/*namespaceURI*/, const QStri
     return true;
 }
 
-bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QString &/*localName*/,
-                                      const QString &qName, const QXmlAttributes &atts)
+bool SupXML::XmlReader::startElement()
 {
-    state = findState(qName.toLower());
+    state = findState(qualifiedName().toString().toLower());
+    QXmlStreamAttributes atts = attributes();
     QString at;
 
-    if (state != SupXML::XmlHandler::XmlState::BDN && !valid)
+    if (state != SupXML::XmlReader::XmlState::BDN && !valid)
     {
         parent->subtitleProcessor->printError("BDN tag missing\n");
     }
@@ -407,11 +414,11 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
 
     switch ((int)state)
     {
-    case (int)SupXML::XmlHandler::XmlState::UNKNOWN:
+    case (int)SupXML::XmlReader::XmlState::UNKNOWN:
     {
-         parent->subtitleProcessor->printError(QString("Unknown tag %1\n").arg(qName));
+         parent->subtitleProcessor->printError(QString("Unknown tag %1\n").arg(qualifiedName().toString()));
     } break;
-    case (int)SupXML::XmlHandler::XmlState::BDN:
+    case (int)SupXML::XmlReader::XmlState::BDN:
     {
         if (valid)
         {
@@ -422,34 +429,34 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
             valid = true;
         }
     } break;
-    case (int)SupXML::XmlHandler::XmlState::NAME:
+    case (int)SupXML::XmlReader::XmlState::NAME:
     {
-        at = atts.value("Title");
+        at = atts.value("Title").toString();
         if (!at.isEmpty())
         {
             parent->title = at;
             parent->subtitleProcessor->print(QString("Title: %1\n").arg(parent->title));
         }
     } break;
-    case (int)SupXML::XmlHandler::XmlState::LANGUAGE:
+    case (int)SupXML::XmlReader::XmlState::LANGUAGE:
     {
-        at = atts.value("Code");
+        at = atts.value("Code").toString();
         if (!at.isEmpty())
         {
             parent->language = at;
             parent->subtitleProcessor->print(QString("Language: %1\n").arg(parent->language));
         }
     } break;
-    case (int)SupXML::XmlHandler::XmlState::FORMAT:
+    case (int)SupXML::XmlReader::XmlState::FORMAT:
     {
-        at = atts.value("FrameRate");
+        at = atts.value("FrameRate").toString();
         if (!at.isEmpty())
         {
             parent->fps = parent->subtitleProcessor->getFPS(at);
             parent->fpsXml = parent->XmlFps(parent->fps);
             parent->subtitleProcessor->print(QString("fps: %1\n").arg(QString::number(parent->fps, 'g', 6)));
         }
-        at = atts.value("VideoFormat");
+        at = atts.value("VideoFormat").toString();
         if (!at.isEmpty())
         {
             QString res = QString(at);
@@ -461,9 +468,9 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
             parent->subtitleProcessor->print(QString("Language: %1\n").arg(res));
         }
     } break;
-    case (int)SupXML::XmlHandler::XmlState::EVENTS:
+    case (int)SupXML::XmlReader::XmlState::EVENTS:
     {
-        at = atts.value("NumberofEvents");
+        at = atts.value("NumberofEvents").toString();
         if (!at.isEmpty())
         {
             bool ok;
@@ -480,7 +487,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
             }
         }
     } break;
-    case (int)SupXML::XmlHandler::XmlState::EVENT:
+    case (int)SupXML::XmlReader::XmlState::EVENT:
     {
         parent->subPictures.push_back(SubPictureXML());
         int num  = parent->subPictures.size();
@@ -489,7 +496,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
         parent->subtitleProcessor->printX(QString("#%1\n").arg(QString::number(num)));
 
         emit parent->currentProgressChanged(num);
-        at = atts.value("InTC");
+        at = atts.value("InTC").toString();
 
         if (!at.isEmpty())
         {
@@ -500,7 +507,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
                 parent->subtitleProcessor->printWarning(QString("Invalid start time %1\n").arg(at));
             }
         }
-        at = atts.value("OutTC");
+        at = atts.value("OutTC").toString();
         if (!at.isEmpty())
         {
             subPicture->setEndTime(TimeUtil::timeStrXmlToPTS(at, parent->fpsXml));
@@ -515,7 +522,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
             subPicture->setStartTime(((subPicture->startTime() * 1001) + 500) / 1000);
             subPicture->setEndTime(((subPicture->endTime() * 1001) + 500) / 1000);
         }
-        at = atts.value("Forced");
+        at = atts.value("Forced").toString();
         if (!at.isEmpty())
         {
             subPicture->setForced(at.toLower() == "true");
@@ -532,7 +539,7 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
         subPicture->setScreenWidth(dim.at(0));
         subPicture->setScreenHeight(dim.at(1));
     } break;
-    case (int)SupXML::XmlHandler::XmlState::GRAPHIC:
+    case (int)SupXML::XmlReader::XmlState::GRAPHIC:
     {
         bool ok;
         int width = atts.value("Width").toInt(&ok);
@@ -564,39 +571,39 @@ bool SupXML::XmlHandler::startElement(const QString &/*namespaceURI*/, const QSt
     return true;
 }
 
-SupXML::XmlHandler::XmlState SupXML::XmlHandler::findState(QString string)
+SupXML::XmlReader::XmlState SupXML::XmlReader::findState(QString string)
 {
     if (string == "bdn")
     {
-        return SupXML::XmlHandler::XmlState::BDN;
+        return SupXML::XmlReader::XmlState::BDN;
     }
     if (string == "description")
     {
-        return SupXML::XmlHandler::XmlState::DESCRIPT;
+        return SupXML::XmlReader::XmlState::DESCRIPT;
     }
     if (string == "name")
     {
-        return SupXML::XmlHandler::XmlState::NAME;
+        return SupXML::XmlReader::XmlState::NAME;
     }
     if (string == "language")
     {
-        return SupXML::XmlHandler::XmlState::LANGUAGE;
+        return SupXML::XmlReader::XmlState::LANGUAGE;
     }
     if (string == "format")
     {
-        return SupXML::XmlHandler::XmlState::FORMAT;
+        return SupXML::XmlReader::XmlState::FORMAT;
     }
     if (string == "events")
     {
-        return SupXML::XmlHandler::XmlState::EVENTS;
+        return SupXML::XmlReader::XmlState::EVENTS;
     }
     if (string == "event")
     {
-        return SupXML::XmlHandler::XmlState::EVENT;
+        return SupXML::XmlReader::XmlState::EVENT;
     }
     if (string == "graphic")
     {
-        return SupXML::XmlHandler::XmlState::GRAPHIC;
+        return SupXML::XmlReader::XmlState::GRAPHIC;
     }
-    return SupXML::XmlHandler::XmlState::UNKNOWN;
+    return SupXML::XmlReader::XmlState::UNKNOWN;
 }

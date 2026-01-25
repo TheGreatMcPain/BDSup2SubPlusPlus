@@ -17,9 +17,6 @@ greaterThan(QT_VER_MAJ, 4) {
 QT        -= gui
 QT        += widgets
 }
-greaterThan(QT_VER_MAJ, 5) {
-QT        += core5compat
-}
 CONFIG    += qt console
 DEFINES   += BUILD_QXT_CORE
 QMAKE_CXXFLAGS += -std=c++17
