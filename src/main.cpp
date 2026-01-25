@@ -18,6 +18,7 @@
  */
 
 #include <QtGlobal>
+#include <QLoggingCategory>
 
 #if QT_VERSION >= 0x050000
 #include <QtWidgets/QApplication>
@@ -32,6 +33,7 @@
 
 int main(int argc, char *argv[])
 {
+    QLoggingCategory::setFilterRules("*.warning=false");
     QApplication a(argc, argv);
     BDSup2Sub w;
 
