@@ -18,7 +18,6 @@ QT        -= gui
 QT        += widgets
 }
 CONFIG    += qt console
-DEFINES   += BUILD_QXT_CORE
 QMAKE_CXXFLAGS += -std=c++17
 TARGET     = bdsup2sub++
 TEMPLATE   = app
@@ -67,9 +66,7 @@ SOURCES += main.cpp\
     colordialog.cpp \
     framepalettedialog.cpp \
     movedialog.cpp \
-    Subtitles/imageobject.cpp \
-    qxtglobal.cpp \
-    qxtcommandoptions.cpp
+    Subtitles/imageobject.cpp
 
 HEADERS  += bdsup2sub.h \
     zoomableimagearea.h \
@@ -117,9 +114,7 @@ HEADERS  += bdsup2sub.h \
     helpdialog.h \
     colordialog.h \
     framepalettedialog.h \
-    movedialog.h \
-    qxtglobal.h \
-    qxtcommandoptions.h
+    movedialog.h
 
 FORMS    += bdsup2sub.ui \
     progressdialog.ui \

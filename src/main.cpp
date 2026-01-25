@@ -27,6 +27,7 @@
 #endif
 
 #include "bdsup2sub.h"
+#include "types.h"
 #ifdef Q_OS_WIN
 #include <windows.h>
 #endif
@@ -35,6 +36,8 @@ int main(int argc, char *argv[])
 {
     QLoggingCategory::setFilterRules("*.warning=false");
     QApplication a(argc, argv);
+    a.setApplicationName(progName);
+    a.setApplicationVersion(progVer);
     BDSup2Sub w;
 
     bool isGUI = argc == 1;

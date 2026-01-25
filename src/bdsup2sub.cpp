@@ -49,7 +49,6 @@
 #include <QFileInfoList>
 #include <QFileInfo>
 #include <QSettings>
-#include "qxtcommandoptions.h"
 
 BDSup2Sub::BDSup2Sub(QWidget *parent) :
     QMainWindow(parent),
@@ -803,9 +802,7 @@ void BDSup2Sub::printWarnings(QTextStream &stream)
 void BDSup2Sub::showUsage(QTextStream& outStream)
 {
     outStream << progNameVer << " " << authorDate << Qt::endl;
-    outStream << "Syntax:" << Qt::endl;
-    outStream << QString("%1 [options] -o outfile infile").arg(progName.toLower()) << Qt::endl;
-    options->showUsage(false, outStream);
+    outStream << "\n" << options->helpText();
     outStream << Qt::endl << "Wildcard support:" << Qt::endl;
     outStream << "Use \"*\" for any character and \"?\" for one character in the source name" << Qt::endl;
     outStream << "Use exactly one \"*\" in the target file name." << Qt::endl;
@@ -815,86 +812,106 @@ void BDSup2Sub::showUsage(QTextStream& outStream)
 
 void BDSup2Sub::addCLIOptions()
 {
-    options = new QxtCommandOptions;
-    options->setParamStyle(QxtCommandOptions::Space);
-    options->setFlagStyle(QxtCommandOptions::DoubleDash);
+    options = new QCommandLineParser();
 
-    options->addSection("Options");
-    options->add("h",                 "\tList options");
-    options->alias("h", "help");
-    options->add("load-settings",     "\tSet to load settings stored in INI file.");
-    options->add("resolution",        "\tSet resolution to 480, 576, 720 or 1080. Default: 576. "
-                                      "\tSupported values: keep, ntsc=480, pal=576, 1440x1080.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("fps-source",        "\tSynchronize source frame rate to <x>. Default: auto. "
-                                      "\tSupported values: 24p=23.976, 25p=25, 30p=29.967.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("fps-target",        "\tConvert the target frame rate to <x>. Default: keep. "
-                                      "\tSupported values: 24p=23.976, 25p=25, 30p=29.967.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("delay",             "\tSet delay in ms. Default: 0.0. " ,
-                 QxtCommandOptions::ValueRequired);
-    options->add("filter",            "\tSet the filter to use for scaling. Default: bilinear. "
-                                      "\tSupported values: bilinear, triangle, bicubic, bell, "
-                                      "\tb-spline, hermite, lanczos3, mitchell.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("palette-mode",      "\tPalette mode: keep, create, dither. Default: create. " ,
-                 QxtCommandOptions::ValueRequired);
-    options->add("minimum-time",      "\tSet the minimum display time in ms. Default: 500.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("merge-time",        "\tSet max time diff to merge subs in ms. Default: 200.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("move-in-ratio",     "\tMove captions from inside screen ratio <x>.",
-                 QxtCommandOptions::ValueRequired, 1);
-    options->add("move-out-ratio",    "\tMove captions from outside screen ratio <x>.",
-                 QxtCommandOptions::ValueRequired, 1);
-    options->add("move-y-origin",     "\tMove captions from the original vertical position. "
-                                      "\tSupported values: up, down. ",
-                 QxtCommandOptions::ValueRequired, 1);
-    options->add("move-y-offset",     "\tSet optional +/- offset to move captions by.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("move-x",            "\tMove captions horizontally from specified position. "
-                                      "\tSupported values: left, right, center, origin. ",
-                 QxtCommandOptions::ValueRequired);
-    options->add("move-x-offset",     "\tSet optional +/- offset to move captions by.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("crop-y",            "\tCrop the upper/lower n lines. Default: 0",
-                 QxtCommandOptions::ValueRequired);
-    options->add("alpha-crop",        "\tSet the alpha cropping threshold. Default: 10",
-                 QxtCommandOptions::ValueRequired);
-    options->add("scale-x",           "\tScale captions horizontally by factor. Default 1.0.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("scale-y",           "\tScale captions vertically by factor. Default 1.0.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("no-export-palette", "\tDo not export palette file.");
-    options->add("export-palette",    "\tExport target palette in PGCEdit format.");
-    options->add("forced-only",       "\tExport only forced subtitles.");
-    options->add("force-all",         "\tSet or clear the forced flag for all subpictures. "
-                                      "\tSupported values: set/clear.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("swap",              "\tSwap Cr/Cb components.");
-    options->add("no-fix-invisible",  "\tDo not fix zero alpha frame palette.");
-    options->add("fix-invisible",     "\tFix zero alpha frame palette.");
-    options->add("no-verbose",        "\tSwitch off verbose console output mode.");
-    options->add("verbose",           "\tSwitch on verbose console output mode.");
-    options->add("log-to-stderr",     "\tSwitch to change progress output to standard error.");
+    options->addHelpOption();
+    options->addVersionOption();
+    options->addPositionalArgument("inFile", "Input subtitle file.");
 
-    options->addSection("Options only for SUB/IDX or SUP/IFO as target");
-    options->add("alpha-thr",         "\tSet alpha threshold 0..255. Default 80.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("med-low-thr",       "\tSet luminance low/med threshold 0..255.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("med-hi-thr",        "\tSet luminance med/hi threshold 0..255.",
-                 QxtCommandOptions::ValueRequired);
-    options->add("language",          "\tSet language to <n>. Default: de (Vobsub Only).",
-                 QxtCommandOptions::ValueRequired);
-    options->add("palette-file",      "\tLoad palette file <n>. Overrides default palette.",
-                 QxtCommandOptions::ValueRequired);
+    options->addOptions({
+        {"load-settings",
+                "Set to load settings stored in INI file.\n", "settingsFile"},
 
-    options->addSection("Output");
-    options->add("o",                 "\tSpecify output file.",
-                 QxtCommandOptions::ValueRequired);
-    options->alias("o", "output");
+        {"resolution",
+                "Set resolution to 480, 576, 720 or 1080. Default: 576. "
+                "Supported values: keep, ntsc=480, pal=576, 1440x1080.\n", "resolution"},
+
+        {"fps-source",
+                "Synchronize source frame rate to <x>. Default: auto. "
+                "Supported values: 24p=23.976, 25p=25, 30p=29.967.\n", "fps"},
+
+        {"fps-target",
+                "Convert the target frame rate to <x>. Default: keep. "
+                "Supported values: 24p=23.976, 25p=25, 30p=29.967.\n", "fps"},
+
+        {"delay", "Set delay in ms. Default: 0.0.\n" , "ms"},
+
+        {"filter",
+                "Set the filter to use for scaling. Default: bilinear. "
+                "Supported values: bilinear, triangle, bicubic, bell, "
+                "b-spline, hermite, lanczos3, mitchell.\n", "algorithm"},
+
+        {"palette-mode",
+                "Palette mode: keep, create, dither. Default: create.\n" , "mode"},
+
+        {"minimum-time",
+                "Set the minimum display time in ms. Default: 500.\n", "ms"},
+
+        {"merge-time",
+                "Set max time diff to merge subs in ms. Default: 200.\n", "ms"},
+
+        {"move-in-ratio",
+                "Move captions from inside screen ratio <x>.\n", "x"},
+
+        {"move-out-ratio",
+                "Move captions from outside screen ratio <x>.\n", "x"},
+
+        {"move-y-origin",
+                "Move captions from the original vertical position. "
+                "Supported values: up, down.\n", "direction"},
+
+        {"move-y-offset",
+                "Set optional +/- offset to move captions by.\n", "offset"},
+
+        {"move-x",
+                "Move captions horizontally from specified position. "
+                "Supported values: left, right, center, origin. \n", "direction"},
+
+        {"move-x-offset",
+                "Set optional +/- offset to move captions by.\n", "offset"},
+
+        {"crop-y",
+                "Crop the upper/lower n lines. Default: 0\n", "y"},
+
+        {"alpha-crop",
+                "Set the alpha cropping threshold. Default: 10\n", "threshold"},
+
+        {"scale-x",
+                "Scale captions horizontally by factor. Default 1.0.\n", "x"},
+
+        {"scale-y",
+                "Scale captions vertically by factor. Default 1.0.\n", "y"},
+
+        {"no-export-palette", "Do not export palette file.\n"},
+        {"export-palette",    "Export target palette in PGCEdit format.\n"},
+        {"forced-only",       "Export only forced subtitles.\n"},
+        {"force-all",
+                "Set or clear the forced flag for all subpictures. "
+                "Supported values: set/clear.\n", "option"},
+
+        {"swap",              "Swap Cr/Cb components.\n"},
+        {"no-fix-invisible",  "Do not fix zero alpha frame palette.\n"},
+        {"fix-invisible",     "Fix zero alpha frame palette.\n"},
+        {"no-verbose",        "Switch off verbose console output mode.\n"},
+        {"verbose",           "Switch on verbose console output mode.\n"},
+        {"log-to-stderr",     "Switch to change progress output to standard error.\n"},
+        {"alpha-thr",
+                "Set alpha threshold 0..255. Default 80. (SUB/IDX,SUP/IFO Output Only)\n", "threshold"},
+
+        {"med-low-thr",
+                "Set luminance low/med threshold 0..255. (SUB/IDX,SUP/IFO Output Only)\n", "luminance"},
+
+        {"med-hi-thr",
+                "Set luminance med/hi threshold 0..255. (SUB/IDX,SUP/IFO Output Only)\n", "luminance"},
+
+        {"language",
+                "Set language to <n>. Default: de (Vobsub SUB/IDX Output Only).\n", "language"},
+
+        {"palette-file",
+                "Load palette file <n>. Overrides default palette. (SUB/IDX,SUP/IFO Output Only)\n", "paletteFile"},
+
+        {{"o", "output"}, "Specify output file.", "outFile"},
+    });
 }
 
 bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
@@ -914,12 +931,12 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
         args.replace(args.indexOf("-o"), "--output");
     }
 
-    options->parse(args);
+    bool parseResult = options->parse(args);
 
-    QMultiHash<QString, QVariant> parameters = options->parameters();
-    QStringList positional = options->positional();
+    QStringList parameters = options->optionNames();
+    QStringList positional = options->positionalArguments();
 
-    if (options->count("log-to-stderr"))
+    if (options->isSet("log-to-stderr"))
     {
         streamFile.open(stderr, QIODevice::WriteOnly);
         subtitleProcessor->setOutputStreamToStdError();
@@ -930,8 +947,10 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
     }
     outStream.setDevice(&streamFile);
 
-    if (positional.size() > 1 || options->count("h") || options->showUnrecognizedWarning(errorStream))
+    if (positional.size() > 1 || options->isSet("h") || !parseResult)
     {
+        if (!parseResult)
+            outStream << options->errorText() << "\n" << Qt::endl;
         showUsage(outStream);
         exit(1);
     }
@@ -957,9 +976,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
         QString trg = "";
         OutputMode mode = (OutputMode)0;
 
-        if (options->count("o"))
+        if (options->isSet("o"))
         {
-            trg = options->value("o").toString();
+            trg = options->value("o");
             QString ext = QFileInfo(trg).suffix();
             if (ext.isEmpty())
             {
@@ -1046,7 +1065,7 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
 
         //Load GUI settings
         loadSettings();
-        if (options->count("load-settings"))
+        if (options->isSet("load-settings"))
         {
             subtitleProcessor = new SubtitleProcessor(0, settings, true);
         }
@@ -1061,9 +1080,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
         bool ok;
         int ival;
 
-        if (options->count("alpha-thr"))
+        if (options->isSet("alpha-thr"))
         {
-            value = options->value("alpha-thr").toString();
+            value = options->value("alpha-thr");
             ival = value.toInt(&ok);
             ival = ok ? ival : -1;
             if (ival < 0 || ival > 255)
@@ -1079,9 +1098,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set alpha threshold to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("med-low-thr"))
+        if (options->isSet("med-low-thr"))
         {
-            value = options->value("med-low-thr").toString();
+            value = options->value("med-low-thr");
             ival = value.toInt(&ok);
             ival = ok ? ival : -1;
             if (ival <0 || ival > 255)
@@ -1097,9 +1116,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set med/low luminance threshold to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("med-hi-thr"))
+        if (options->isSet("med-hi-thr"))
         {
-            value = options->value("med-hi-thr").toString();
+            value = options->value("med-hi-thr");
             ival = value.toInt(&ok);
             ival = ok ? ival : -1;
             if (ival <0 || ival > 255)
@@ -1115,9 +1134,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set med/hi luminance threshold to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("resolution"))
+        if (options->isSet("resolution"))
         {
-            value = options->value("resolution").toString().toLower();
+            value = options->value("resolution").toLower();
 
             bool isKeep = value == "keep";
             subtitleProcessor->setConvertResolution(!isKeep);
@@ -1125,7 +1144,7 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             if (!isKeep)
             {
                 Resolution resolution;
-                bool defineFPStrg = options->count("fps-target");
+                bool defineFPStrg = options->isSet("fps-target");
                 ival = value.toInt(&ok);
                 ival = ok ? ival : -1;
                 if (value == "pal" || ival == 576)
@@ -1180,9 +1199,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             }
         }
 
-        if (options->count("language"))
+        if (options->isSet("language"))
         {
-            value = options->value("language").toString();
+            value = options->value("language");
             for (int l = 0; l < subtitleProcessor->getLanguages().size(); ++l)
             {
                 if (subtitleProcessor->getLanguages()[l][1] == value)
@@ -1210,9 +1229,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             subtitleProcessor->setLanguageIdxSet(true);
         }
 
-        if (options->count("palette-file"))
+        if (options->isSet("palette-file"))
         {
-            value = options->value("palette-file").toString();
+            value = options->value("palette-file");
             QFileInfo f(value);
             if (!f.exists())
             {
@@ -1253,21 +1272,21 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Loaded palette from %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("forced-only"))
+        if (options->isSet("forced-only"))
         {
             subtitleProcessor->setExportForced(true);
             outStream << "OPTION: Exporting only forced subtitles." << Qt::endl;
         }
 
-        if (options->count("swap"))
+        if (options->isSet("swap"))
         {
             subtitleProcessor->setSwapCrCb(true);
             outStream << "OPTION: Swapping Cr/Cb components." << Qt::endl;
         }
 
-        if (options->count("fps-source"))
+        if (options->isSet("fps-source"))
         {
-            value = options->value("fps-source").toString().toLower();
+            value = options->value("fps-source").toLower();
             if (value != "auto")
             {
                 double fps = subtitleProcessor->getFPS(value);
@@ -1286,9 +1305,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: synchronize target framerate to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("fps-target"))
+        if (options->isSet("fps-target"))
         {
-            value = options->value("fps-target").toString().toLower();
+            value = options->value("fps-target").toLower();
             if (value != "keep")
             {
                 double fps = subtitleProcessor->getFPS(value);
@@ -1319,12 +1338,12 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             subtitleProcessor->setKeepFps(true);
         }
 
-        if (options->count("delay"))
+        if (options->isSet("delay"))
         {
             double delay;
             bool ok;
 
-            value = options->value("delay").toString();
+            value = options->value("delay");
             delay = value.toDouble(&ok) * 90.0;
 
             if (!ok)
@@ -1338,12 +1357,12 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                          .arg(QString::number(delayPTS / 90.0, 'g', 6)) << Qt::endl;
         }
 
-        if (options->count("minimum-time"))
+        if (options->isSet("minimum-time"))
         {
             double time;
             bool ok;
 
-            value = options->value("minimum-time").toString();
+            value = options->value("minimum-time");
             time = value.toDouble(&ok) * 90.0;
 
             if (!ok)
@@ -1360,18 +1379,18 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
         }
 
         double screenRatio = -1;
-        if (options->count("move-in-ratio") || options->count("move-out-ratio"))
+        if (options->isSet("move-in-ratio") || options->isSet("move-out-ratio"))
         {
             QString sm;
-            if (options->count("move-in-ratio"))
+            if (options->isSet("move-in-ratio"))
             {
-                value = options->value("move-in-ratio").toString();
+                value = options->value("move-in-ratio");
                 subtitleProcessor->setMoveModeY(MoveModeY::INSIDE);
                 sm = "inside";
             }
-            else if (options->count("move-out-ratio"))
+            else if (options->isSet("move-out-ratio"))
             {
-                value = options->value("move-out-ratio").toString();
+                value = options->value("move-out-ratio");
                 subtitleProcessor->setMoveModeY(MoveModeY::OUTSIDE);
                 sm = "outside";
             }
@@ -1385,10 +1404,10 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                 exit(1);
             }
 
-            if (options->count("move-y-offset"))
+            if (options->isSet("move-y-offset"))
             {
                 bool ok;
-                value = options->value("move-y-offset").toString();
+                value = options->value("move-y-offset");
                 int moveOffsetY = value.toInt(&ok);
                 if (!ok)
                 {
@@ -1404,15 +1423,15 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                          .arg(QString::number(subtitleProcessor->getMoveOffsetY())) << Qt::endl;
         }
 
-        if (options->count("move-y-origin"))
+        if (options->isSet("move-y-origin"))
         {
             subtitleProcessor->setMoveModeY(MoveModeY::ORIGIN);
-            QString sm = options->value("move-y-origin").toString().toLower();
-            value = options->value("move-in-ratio").toString();
-            if (options->count("move-y-offset"))
+            QString sm = options->value("move-y-origin").toLower();
+            value = options->value("move-in-ratio");
+            if (options->isSet("move-y-offset"))
             {
                 bool ok;
-                value = options->value("move-y-offset").toString();
+                value = options->value("move-y-offset");
                 int moveOffsetY = value.toInt(&ok);
                 if (!ok)
                 {
@@ -1429,9 +1448,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                          .arg(QString::number(subtitleProcessor->getMoveOffsetY())) << Qt::endl;
         }
 
-        if (options->count("move-x"))
+        if (options->isSet("move-x"))
         {
-            value = options->value("move-x").toString().toLower();
+            value = options->value("move-x").toLower();
 
             if (value == "left")
             {
@@ -1457,10 +1476,10 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
 
             QString mx = value;
 
-            if (options->count("move-x-offset"))
+            if (options->isSet("move-x-offset"))
             {
                 bool ok;
-                value = options->value("move-x-offset").toString();
+                value = options->value("move-x-offset");
                 int moveOffsetX = value.toInt(&ok);
                 if (!ok)
                 {
@@ -1474,11 +1493,11 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                          .arg(QString::number(subtitleProcessor->getMoveOffsetX())) << Qt::endl;
         }
 
-        if (options->count("crop-y"))
+        if (options->isSet("crop-y"))
         {
             bool ok;
             int cropY;
-            value = options->value("crop-y").toString();
+            value = options->value("crop-y");
             cropY = value.toInt(&ok);
 
             if (ok && cropY > 0)
@@ -1492,9 +1511,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             }
         }
 
-        if (options->count("palette-mode"))
+        if (options->isSet("palette-mode"))
         {
-            value = options->value("palette-mode").toString().toLower();
+            value = options->value("palette-mode").toLower();
 
             if (value == "keep")
             {
@@ -1516,20 +1535,20 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set palette mode to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("verbose"))
+        if (options->isSet("verbose"))
         {
             subtitleProcessor->setVerbatim(true);
             outStream << QString("OPTION: Enabled verbose output.") << Qt::endl;
         }
-        if (options->count("no-verbose"))
+        if (options->isSet("no-verbose"))
         {
             subtitleProcessor->setVerbatim(false);
             outStream << QString("OPTION: Disabled verbose output.") << Qt::endl;
         }
 
-        if (options->count("filter"))
+        if (options->isSet("filter"))
         {
-            value = options->value("filter").toString().toLower();
+            value = options->value("filter").toLower();
 
             value[0] = value[0].toLower();
             int idx = -1;
@@ -1559,11 +1578,11 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             subtitleProcessor->setScalingFilter(ScalingFilters::BILINEAR);
         }
 
-        if (options->count("merge-time"))
+        if (options->isSet("merge-time"))
         {
             bool ok;
             double time = 0;
-            value = options->value("merge-time").toString();
+            value = options->value("merge-time");
             time = value.trimmed().toDouble(&ok) * 90.0;
 
             if (!ok)
@@ -1576,13 +1595,13 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set maximum merge time to %1").arg(QString::number(ti / 90.0, 'g', 6)) << Qt::endl;
         }
 
-        if (options->count("scale-x") || options->count("scale-y"))
+        if (options->isSet("scale-x") || options->isSet("scale-y"))
         {
             bool ok;
             double scaleX = 1.0;
-            if (options->count("scale-x"))
+            if (options->isSet("scale-x"))
             {
-                value = options->value("scale-x").toString();
+                value = options->value("scale-x");
                 scaleX = value.toDouble(&ok);
                 if (!ok)
                 {
@@ -1592,9 +1611,9 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             }
 
             double scaleY = 1.0;
-            if (options->count("scale-y"))
+            if (options->isSet("scale-y"))
             {
-                value = options->value("scale-y").toString();
+                value = options->value("scale-y");
                 scaleY = value.toDouble(&ok);
                 if (!ok)
                 {
@@ -1610,10 +1629,10 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
                          .arg(QString::number(scaleY, 'g', 6)) << Qt::endl;
         }
 
-        if (options->count("alpha-crop"))
+        if (options->isSet("alpha-crop"))
         {
             bool ok;
-            value = options->value("alpha-crop").toString();
+            value = options->value("alpha-crop");
             ival = value.toInt(&ok);
             ival = ok ? ival : -1;
             if (ival < 0 || ival > 255)
@@ -1629,29 +1648,29 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Set alpha cropping threshold to %1").arg(value) << Qt::endl;
         }
 
-        if (options->count("export-palette"))
+        if (options->isSet("export-palette"))
         {
             subtitleProcessor->setWritePGCEditPal(true);
             outStream << QString("OPTION: Export target palette in PGCEDit text format") << Qt::endl;
         }
-        if (options->count("no-export-palette"))
+        if (options->isSet("no-export-palette"))
         {
             subtitleProcessor->setWritePGCEditPal(false);
         }
 
-        if (options->count("fix-invisible"))
+        if (options->isSet("fix-invisible"))
         {
             subtitleProcessor->setFixZeroAlpha(true);
             outStream << QString("OPTION: Fix zero alpha frame palette for SUB/IDX and SUP/IFO") << Qt::endl;
         }
-        if (options->count("no-fix-invisible"))
+        if (options->isSet("no-fix-invisible"))
         {
             subtitleProcessor->setFixZeroAlpha(false);
         }
 
-        if (options->count("force-all"))
+        if (options->isSet("force-all"))
         {
-            value = options->value("force-all").toString().toLower();
+            value = options->value("force-all").toLower();
             if (value == "set" || value == "clear")
             {
                 subtitleProcessor->setForceAll(value == "set" ? SetState::SET : SetState::CLEAR);

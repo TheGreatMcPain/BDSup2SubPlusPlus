@@ -33,7 +33,7 @@
 class SubtitleProcessor;
 class ProgressDialog;
 class QSettings;
-class QxtCommandOptions;
+class QCommandLineParser;
 class QTextStream;
 
 namespace Ui {
@@ -80,7 +80,7 @@ private:
     QPalette* errorBackground;
     QPalette* okBackground;
 
-    QxtCommandOptions* options;
+    QCommandLineParser* options;
 
     QSettings* settings = 0;
     bool fromCLI = false;
