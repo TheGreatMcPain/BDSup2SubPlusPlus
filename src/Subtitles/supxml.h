@@ -26,7 +26,7 @@
 
 #include <QObject>
 #include <QFile>
-#include <QXmlDefaultHandler>
+#include <QXmlStreamReader>
 #include <QStringList>
 #include <QString>
 #include <QList>
@@ -36,7 +36,7 @@ class SubtitleProcessor;
 class SubPictureXML;
 class QImage;
 class BitStream;
-class XmlHandler;
+class XmlReader;
 
 enum class Resolution : int;
 
@@ -44,14 +44,14 @@ class SupXML : public QObject, public Substream
 {
     Q_OBJECT
 
-    class XmlHandler : public QXmlDefaultHandler
+    class XmlReader : public QXmlStreamReader
     {
     public:
-        XmlHandler(SupXML* parent) { this->parent = parent; }
+        XmlReader(SupXML* parent) { this->parent = parent; }
 
-        bool characters(const QString &ch);
-        bool endElement(const QString &namespaceURI, const QString &localName, const QString &qName);
-        bool startElement(const QString &namespaceURI, const QString &localName, const QString &qName, const QXmlAttributes &atts);
+        bool characters();
+        bool endElement();
+        bool startElement();
 
     private:
 
