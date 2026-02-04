@@ -143,7 +143,11 @@ void ColorDialog::on_loadPaletteButton_clicked()
 
     // check if valid palette file
     QFile file(filePath);
-    file.open(QIODevice::ReadOnly);
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QMessageBox::warning(this, "Error", file.errorString());
+        return;
+    }
     QTextStream readFile(&file);
     QString header = readFile.read(4);
     file.close();

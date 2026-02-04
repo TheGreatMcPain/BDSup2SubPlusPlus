@@ -938,12 +938,20 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
 
     if (options->isSet("log-to-stderr"))
     {
-        streamFile.open(stderr, QIODevice::WriteOnly);
+        if(!streamFile.open(stderr, QIODevice::WriteOnly))
+        {
+            errorStream << "ERROR: " << streamFile.errorString() << Qt::endl;
+            return false;
+        }
         subtitleProcessor->setOutputStreamToStdError();
     }
     else
     {
-        streamFile.open(stdout, QIODevice::WriteOnly);
+        if(!streamFile.open(stdout, QIODevice::WriteOnly))
+        {
+            errorStream << "ERROR: " << streamFile.errorString() << Qt::endl;
+            return false;
+        }
     }
     outStream.setDevice(&streamFile);
 
@@ -1241,7 +1249,11 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
 
             // check if valid palette file
             QFile file(value);
-            file.open(QIODevice::ReadOnly);
+            if(!file.open(QIODevice::ReadOnly))
+            {
+                errorStream << "ERROR: " << file.errorString() << Qt::endl;
+                exit(1);
+            }
             QTextStream readFile(&file);
             QString header = readFile.read(4);
             file.close();
