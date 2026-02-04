@@ -24,7 +24,16 @@ SubPicture::SubPicture()
 }
 
 SubPicture::SubPicture(const SubPicture &other) :
+    forcedFlags(other.forcedFlags),
     erasePatch(other.erasePatch),
+    _imageWidth(other._imageWidth),
+    _imageHeight(other._imageHeight),
+    xOfs(other.xOfs),
+    yOfs(other.yOfs),
+    scaledImageRects(other.scaledImageRects),
+    imageRects(other.imageRects),
+    scaledWindowRects(other.scaledWindowRects),
+    windowRects(other.windowRects),
     _screenWidth(other._screenWidth),
     _screenHeight(other._screenHeight),
     start(other.start),
@@ -32,24 +41,24 @@ SubPicture::SubPicture(const SubPicture &other) :
     compositionNumber(other.compositionNumber),
     numberCompObjects(other.numberCompObjects),
     numWindows(other.numWindows),
-    _imageWidth(other._imageWidth),
-    _imageHeight(other._imageHeight),
-    xOfs(other.xOfs),
-    yOfs(other.yOfs),
     forced(other.forced),
     decoded(other.decoded),
     excluded(other.excluded),
-    scaledImageRects(other.scaledImageRects),
-    imageRects(other.imageRects),
-    scaledWindowRects(other.scaledWindowRects),
-    windowRects(other.windowRects),
-    objectIds(other.objectIds),
-    forcedFlags(other.forcedFlags)
+    objectIds(other.objectIds)
 {
 }
 
 SubPicture::SubPicture(const SubPicture *other) :
+    forcedFlags(other->forcedFlags),
     erasePatch(other->erasePatch),
+    _imageWidth(other->_imageWidth),
+    _imageHeight(other->_imageHeight),
+    xOfs(other->xOfs),
+    yOfs(other->yOfs),
+    scaledImageRects(other->scaledImageRects),
+    imageRects(other->imageRects),
+    scaledWindowRects(other->scaledWindowRects),
+    windowRects(other->windowRects),
     _screenWidth(other->_screenWidth),
     _screenHeight(other->_screenHeight),
     start(other->start),
@@ -57,19 +66,10 @@ SubPicture::SubPicture(const SubPicture *other) :
     compositionNumber(other->compositionNumber),
     numberCompObjects(other->numberCompObjects),
     numWindows(other->numWindows),
-    _imageWidth(other->_imageWidth),
-    _imageHeight(other->_imageHeight),
-    xOfs(other->xOfs),
-    yOfs(other->yOfs),
     forced(other->forced),
     decoded(other->decoded),
     excluded(other->excluded),
-    scaledImageRects(other->scaledImageRects),
-    imageRects(other->imageRects),
-    scaledWindowRects(other->scaledWindowRects),
-    windowRects(other->windowRects),
-    objectIds(other->objectIds),
-    forcedFlags(other->forcedFlags)
+    objectIds(other->objectIds)
 {
 }
 

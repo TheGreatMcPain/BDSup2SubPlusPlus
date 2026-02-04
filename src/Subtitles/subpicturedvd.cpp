@@ -26,6 +26,11 @@ SubPictureDVD::SubPictureDVD()
 
 SubPictureDVD::SubPictureDVD(const SubPictureDVD &other) :
     SubPicture(other),
+    originalAlpha(other.originalAlpha),
+    originalPal(other.originalPal),
+    alpha(other.alpha),
+    pal(other.pal),
+    rleFragments(other.rleFragments),
     pictureOffset(other.pictureOffset),
     size(other.size),
     evenOfs(other.evenOfs),
@@ -33,18 +38,18 @@ SubPictureDVD::SubPictureDVD(const SubPictureDVD &other) :
     origWidth(other.origWidth),
     origHeight(other.origHeight),
     origX(other.origX),
-    origY(other.origY),
-    rleFragments(other.rleFragments),
-    originalAlpha(other.originalAlpha),
-    originalPal(other.originalPal),
-    alpha(other.alpha),
-    pal(other.pal)
+    origY(other.origY)
 {
 
 }
 
 SubPictureDVD::SubPictureDVD(const SubPictureDVD *other) :
     SubPicture(other),
+    originalAlpha(other->originalAlpha),
+    originalPal(other->originalPal),
+    alpha(other->alpha),
+    pal(other->pal),
+    rleFragments(other->rleFragments),
     pictureOffset(other->pictureOffset),
     size(other->size),
     evenOfs(other->evenOfs),
@@ -52,12 +57,7 @@ SubPictureDVD::SubPictureDVD(const SubPictureDVD *other) :
     origWidth(other->origWidth),
     origHeight(other->origHeight),
     origX(other->origX),
-    origY(other->origY),
-    rleFragments(other->rleFragments),
-    originalAlpha(other->originalAlpha),
-    originalPal(other->originalPal),
-    alpha(other->alpha),
-    pal(other->pal)
+    origY(other->origY)
 {
 
 }

@@ -34,8 +34,8 @@
 #include <QFileInfo>
 
 SubDVD::SubDVD(QString subFileName, QString idxFileName, SubtitleProcessor* subtitleProcessor) :
-    subFileName(subFileName),
-    idxFileName(idxFileName)
+    idxFileName(idxFileName),
+    subFileName(subFileName)
 {
     this->subtitleProcessor = subtitleProcessor;
 }
