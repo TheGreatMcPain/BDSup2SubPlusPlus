@@ -81,6 +81,7 @@ public:
     SubPictureBD();
     SubPictureBD(const SubPictureBD* other);
     SubPictureBD(const SubPictureBD& other);
+    SubPictureBD& operator=(const SubPictureBD& other) = default;
     ~SubPictureBD() override { }
 
     SubPicture* copy() override;

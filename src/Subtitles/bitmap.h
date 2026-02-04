@@ -38,6 +38,7 @@ public:
     Bitmap(int width, int height);
     Bitmap(int width, int height, int color);
     Bitmap(QImage subtitleImage);
+    Bitmap& operator=(const Bitmap& other) = default;
 
     void clear(int color);
     void fillRect(int x1, int y1, int width, int height, int color);

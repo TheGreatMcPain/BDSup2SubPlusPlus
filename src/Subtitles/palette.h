@@ -32,6 +32,7 @@ public:
     Palette(const Palette* other);
     Palette(int paletteSize, bool use601 = false);
     Palette(QList<uchar> r, QVector<uchar> g, QVector<uchar> b, QVector<uchar> a, bool use601);
+    Palette& operator=(const Palette& other) = default;
     ~Palette();
 
     void setAlpha(int index, int alpha);

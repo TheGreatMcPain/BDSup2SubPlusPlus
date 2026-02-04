@@ -30,6 +30,7 @@ public:
     SubPictureXML();
     SubPictureXML(const SubPictureXML& other);
     SubPictureXML(const SubPictureXML* other);
+    SubPictureXML& operator=(const SubPictureXML& other) = default;
     ~SubPictureXML() { }
 
     SubPicture* copy();

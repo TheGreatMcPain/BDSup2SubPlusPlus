@@ -32,6 +32,7 @@ public:
     SubPicture();
     SubPicture(const SubPicture& other);
     SubPicture(const SubPicture* other);
+    SubPicture& operator=(const SubPicture& other) = default;
     virtual ~SubPicture() { }
 
     int screenWidth() { return _screenWidth; }

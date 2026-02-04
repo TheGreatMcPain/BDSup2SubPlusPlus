@@ -46,6 +46,7 @@ class SupBD : public QObject, public Substream
 
 public:
     SupBD(QString fileName, SubtitleProcessor* subtitleProcessor);
+    SupBD& operator=(const SupBD& other) = default;
     ~SupBD();
 
     void decode(int index);

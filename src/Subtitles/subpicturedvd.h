@@ -31,6 +31,7 @@ public:
     SubPictureDVD();
     SubPictureDVD(const SubPictureDVD &other);
     SubPictureDVD(const SubPictureDVD *other);
+    SubPictureDVD& operator=(const SubPictureDVD& other) = default;
     ~SubPictureDVD() { }
 
     QList<int> originalAlpha = QVector<int>(4);

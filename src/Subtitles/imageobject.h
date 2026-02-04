@@ -30,6 +30,7 @@ public:
     ImageObject();
     ImageObject(const ImageObject* other);
     ImageObject(const ImageObject& other);
+    ImageObject& operator=(const ImageObject& other) = default;
     ~ImageObject() { fragments.clear(); }
 
     int bufferSize() { return bufSize; }

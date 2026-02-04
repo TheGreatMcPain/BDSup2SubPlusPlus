@@ -33,6 +33,7 @@ class SubtitleProcessor;
 class Substream
 {
 public:
+    Substream& operator=(const Substream& other) = default;
     virtual ~Substream() { }
 
     virtual void decode(int index) = 0;

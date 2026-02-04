@@ -26,6 +26,7 @@ public:
     PaletteInfo();
     PaletteInfo(const PaletteInfo* other);
     PaletteInfo(const PaletteInfo& other);
+    PaletteInfo& operator=(const PaletteInfo& other) = default;
 
     int paletteOffset() { return offset; }
     void setPaletteOffset(int paletteOffset) { offset = paletteOffset; }

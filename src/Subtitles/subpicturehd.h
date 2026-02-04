@@ -28,6 +28,7 @@ public:
     SubPictureHD();
     SubPictureHD(const SubPictureHD& other);
     SubPictureHD(const SubPictureHD* other);
+    SubPictureHD& operator=(const SubPictureHD& other) = default;
     ~SubPictureHD() { }
 
     int paletteOffset() { return paletteOfs; }

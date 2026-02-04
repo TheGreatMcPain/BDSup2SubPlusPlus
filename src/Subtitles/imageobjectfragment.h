@@ -33,6 +33,12 @@ public:
         packetSize = other.packetSize;
         bufferOfs = other.bufferOfs;
     }
+    ImageObjectFragment& operator=(const ImageObjectFragment& other)
+    {
+        packetSize = other.packetSize;
+        bufferOfs = other.bufferOfs;
+        return *this;
+    }
 
     int imagePacketSize() { return packetSize; }
     void setImagePacketSize(int imagePacketSize) { packetSize = imagePacketSize; }
