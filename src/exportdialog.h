@@ -49,6 +49,7 @@ private slots:
     void on_fileNameLineEdit_textChanged(const QString &inFileName);
     void on_exportPGCEditFormatCheckBox_toggled(bool checked);
     void on_exportForcedOnlyCheckBox_toggled(bool checked);
+    void on_exportNonForcedOnlyCheckBox_toggled(bool checked);
 
     void on_languageComboBox_currentIndexChanged(int index);
 
@@ -60,6 +61,7 @@ private:
     SubtitleProcessor* subtitleProcessor;
     int languageIdx;
     bool exportForced;
+    bool exportNonForced;
     bool writePGCPal;
 };
 

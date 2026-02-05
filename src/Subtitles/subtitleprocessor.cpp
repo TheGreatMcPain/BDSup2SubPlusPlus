@@ -1011,6 +1011,10 @@ void SubtitleProcessor::writeSub(QString filename)
     {
         maxNum = countForcedIncluded();
     }
+    else if (exportNonForced)
+    {
+        maxNum = countNonForcedIncluded();
+    }
     else
     {
         maxNum = countIncluded();
@@ -1059,7 +1063,9 @@ void SubtitleProcessor::writeSub(QString filename)
         }
         setCurrentProgress(i);
 
-        if (!subPictures[i]->exclude() && (!exportForced || subPictures[i]->isForced()))
+        if (!subPictures[i]->exclude() &&
+                (!exportForced || subPictures[i]->isForced()) &&
+                (!exportNonForced || !subPictures[i]->isForced()))
         {
             if (outMode == OutputMode::VOBSUB)
             {
@@ -2459,6 +2465,19 @@ int SubtitleProcessor::countForcedIncluded()
     for (auto subPicture : subPictures)
     {
         if (subPicture->isForced() && !subPicture->exclude())
+        {
+            ++n;
+        }
+    }
+    return n;
+}
+
+int SubtitleProcessor::countNonForcedIncluded()
+{
+    int n = 0;
+    for (auto subPicture : subPictures)
+    {
+        if (!subPicture->isForced() && !subPicture->exclude())
         {
             ++n;
         }

@@ -41,6 +41,7 @@ ExportDialog::ExportDialog(QWidget *parent, QString filePath, SubtitleProcessor*
     ui->fileNameLineEdit->setText(QDir::toNativeSeparators(saveFileName));
     languageIdx = subtitleProcessor->getLanguageIdx();
     exportForced = subtitleProcessor->getNumForcedFrames() > 0 && subtitleProcessor->getExportForced();
+    exportNonForced = subtitleProcessor->getNumForcedFrames() > 0 && subtitleProcessor->getExportNonForced();
     writePGCPal = subtitleProcessor->getWritePGCEditPal();
 
     ui->languageComboBox->blockSignals(true);
@@ -68,7 +69,12 @@ ExportDialog::ExportDialog(QWidget *parent, QString filePath, SubtitleProcessor*
     }
 
     ui->exportForcedOnlyCheckBox->setEnabled(subtitleProcessor->getNumForcedFrames() > 0);
+    ui->exportForcedOnlyCheckBox->setDisabled(exportNonForced);
     ui->exportForcedOnlyCheckBox->setChecked(exportForced);
+
+    ui->exportNonForcedOnlyCheckBox->setEnabled(subtitleProcessor->getNumForcedFrames() > 0);
+    ui->exportNonForcedOnlyCheckBox->setDisabled(exportForced);
+    ui->exportNonForcedOnlyCheckBox->setChecked(exportNonForced);
 
     if (subtitleProcessor->getOutputMode() == OutputMode::VOBSUB)
     {
@@ -102,6 +108,7 @@ void ExportDialog::on_saveButton_clicked()
 {
     accept();
     subtitleProcessor->setExportForced(exportForced);
+    subtitleProcessor->setExportNonForced(exportNonForced);
     subtitleProcessor->setLanguageIdx(languageIdx);
     if (subtitleProcessor->getOutputMode() == OutputMode::VOBSUB || subtitleProcessor->getOutputMode() == OutputMode::SUPIFO)
     {
@@ -138,6 +145,11 @@ void ExportDialog::on_exportPGCEditFormatCheckBox_toggled(bool checked)
 void ExportDialog::on_exportForcedOnlyCheckBox_toggled(bool checked)
 {
     exportForced = checked;
+}
+
+void ExportDialog::on_exportNonForcedOnlyCheckBox_toggled(bool checked)
+{
+    exportNonForced = checked;
 }
 
 void ExportDialog::on_languageComboBox_currentIndexChanged(int index)

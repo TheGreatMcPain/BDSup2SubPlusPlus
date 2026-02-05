@@ -140,6 +140,19 @@
     </widget>
    </item>
    <item>
+    <widget class="QCheckBox" name="exportNonForcedOnlyCheckBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="toolTip">
+      <string>Export subpictures not marked as 'forced'.</string>
+     </property>
+     <property name="text">
+      <string>                 Export all &amp;except for forced</string>
+     </property>
+    </widget>
+   </item>
+   <item>
     <widget class="QCheckBox" name="exportPGCEditFormatCheckBox">
      <property name="toolTip">
       <string>Export palette in PGCEdit text format (RGB, 0..255)</string>
@@ -203,6 +216,7 @@
   <tabstop>browseButton</tabstop>
   <tabstop>languageComboBox</tabstop>
   <tabstop>exportForcedOnlyCheckBox</tabstop>
+  <tabstop>exportNonForcedOnlyCheckBox</tabstop>
   <tabstop>exportPGCEditFormatCheckBox</tabstop>
   <tabstop>cancelButton</tabstop>
  </tabstops>

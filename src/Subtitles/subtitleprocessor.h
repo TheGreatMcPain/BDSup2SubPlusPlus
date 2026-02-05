@@ -328,6 +328,8 @@ public:
     void setCliMode(bool value) { cliMode = value; }
     bool getExportForced() { return exportForced; }
     void setExportForced(bool value) { exportForced = value; }
+    bool getExportNonForced() { return exportNonForced; }
+    void setExportNonForced(bool value) { exportNonForced = value; }
     QList<int> getLuminanceThreshold() { return luminanceThreshold; }
     void setLuminanceThreshold(QList<int> value) { luminanceThreshold = value; }
     void setLoadPath(QString value) { fileName = value; }
@@ -562,6 +564,7 @@ private:
     bool moveCaptions = false;
     bool cliMode = false;
     bool exportForced = false;
+    bool exportNonForced = false;
     bool verbatim = false;
     bool verbatimSet = false;
     static constexpr bool applyFreeScaleDefault = false;
@@ -597,6 +600,7 @@ private:
     QList<int> alphaDefault = { 0, 0xf, 0xf, 0xf};
     void SetValuesFromSettings();
     int countForcedIncluded();
+    int countNonForcedIncluded();
     int countIncluded();
     void writePGCEditPalette(QString filename, Palette &palette);
     void validateTimes(int index, SubPicture* subPicture, SubPicture* subPictureNext,

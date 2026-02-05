@@ -885,6 +885,7 @@ void BDSup2Sub::addCLIOptions()
         {"no-export-palette", "Do not export palette file.\n"},
         {"export-palette",    "Export target palette in PGCEdit format.\n"},
         {"forced-only",       "Export only forced subtitles.\n"},
+        {"exclude-forced",    "Export all subtitles except forced.\n"},
         {"force-all",
                 "Set or clear the forced flag for all subpictures. "
                 "Supported values: set/clear.\n", "option"},
@@ -1284,10 +1285,22 @@ bool BDSup2Sub::execCLI(int /*argc*/, char** /*argv*/)
             outStream << QString("OPTION: Loaded palette from %1").arg(value) << Qt::endl;
         }
 
+        if (options->isSet("forced-only") && options->isSet("exclude-forced"))
+        {
+            errorStream << "ERROR: 'forced-only' and 'exclude-forced' can't be both enabled." << Qt::endl;
+            exit(1);
+        }
+
         if (options->isSet("forced-only"))
         {
             subtitleProcessor->setExportForced(true);
             outStream << "OPTION: Exporting only forced subtitles." << Qt::endl;
+        }
+
+        if (options->isSet("exclude-forced"))
+        {
+            subtitleProcessor->setExportNonForced(true);
+            outStream << "OPTION: Exporting all subtitles execpt forced." << Qt::endl;
         }
 
         if (options->isSet("swap"))
